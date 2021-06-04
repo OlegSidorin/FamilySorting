@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<RevitAddIns>
+	<AddIn Type="Application">
+		<Name>КПСП Сортировка семейств</Name>
+		<Assembly>C:\Users\Sidorin_O\source\repos\FamilySorting\FamilySorting\bin\x64\Debug\FamilySorting.dll</Assembly>
+		<AddInId>1E81A36B-EA5A-4398-9EBF-55C32794DE0F</AddInId>
+		<FullClassName>FamilySorting.Main</FullClassName>
+		<VendorId>КПСП</VendorId>
+		<VendorDescription>Такая фирма, что еще сказать..</VendorDescription>
+	</AddIn>
+</RevitAddIns>
