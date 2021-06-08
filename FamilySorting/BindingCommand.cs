@@ -14,7 +14,7 @@
 
     [Autodesk.Revit.Attributes.Transaction(Autodesk.Revit.Attributes.TransactionMode.Manual)]
     [Autodesk.Revit.Attributes.Regeneration(Autodesk.Revit.Attributes.RegenerationOption.Manual)]
-    class SortingCommand : IExternalCommand
+    class BindingCommand : IExternalCommand
     {
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
@@ -38,7 +38,18 @@
             {
                 //TaskDialog.Show("Warning", "Privet");
                 FamilyManager familyManager = doc.FamilyManager;
-                FamilyType familyType = familyManager.CurrentType;
+                FamilyType familyType;
+                familyType = familyManager.CurrentType;
+                if (familyType == null)
+                {
+                    using (Transaction t = new Transaction(doc, "change"))
+                    {
+                        t.Start();
+                        familyType = familyManager.NewType("Обобщенные модели");
+                        familyManager.CurrentType = familyType;
+                        t.Commit();
+                    }
+                }
 
                 try
                 {
@@ -87,10 +98,20 @@
                             }
                             isExist = false;
                         }
-                        log += "\n---";
+                        t.Commit();
+                    }
 
-                        int milliseconds = 1000;
-                        Thread.Sleep(milliseconds);
+                }
+                catch (Exception e)
+                {
+                    TaskDialog.Show("Warning 1", e.ToString());
+                }
+                try
+                {
+                    using (Transaction t = new Transaction(doc, "Apply"))
+                    {
+                        t.Start();
+                        log += "\n---";
 
                         var p = familyManager.get_Parameter("МСК_Версия Revit");
                         string build = commandData.Application.Application.VersionNumber.ToString();
@@ -98,28 +119,36 @@
                         log += "\nНовое значение <МСК_Версия Revit>: " + build;
 
                         p = familyManager.get_Parameter("КПСП_GUID семейства");
-                        
+
                         if (familyType.AsString(p) == "")
                         {
                             Guid famGuid = Guid.NewGuid();
                             familyManager.Set(p, famGuid.ToString());
                             log += "\nПрисвоили новый Guid семейству: " + familyType.AsString(p);
                         }
-                            
+
+                        p = familyManager.get_Parameter("КПСП_Дата редактирования");
+
+                        DateTime today = DateTime.Now;
+
+                        int.TryParse(today.Day.ToString(), out int dayInt);
+                        int.TryParse(today.Month.ToString(), out int monthInt);
+                        string sDate = String.Format("{0:D2}-{1:D2}-{2}", dayInt, monthInt, today.Year.ToString());
+                        familyManager.Set(p, sDate);
+                        log += "\nДата редактирования: " + familyType.AsString(p);
 
                         t.Commit();
                     }
-
                 }
                 catch (Exception e)
                 {
-                    TaskDialog.Show("Warning", e.ToString());
+                    TaskDialog.Show("Warning 2", e.ToString());
                 }
 
             }
             else
             {
-                TaskDialog.Show("Warning", "Это не семейство, команда работает только в семействе");
+                TaskDialog.Show("Warning main", "Это не семейство, команда работает только в семействе");
             }
 
             TaskDialog.Show("Final", log);

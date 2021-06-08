@@ -32,7 +32,7 @@
             RibbonPanel panelSort = application.CreateRibbonPanel(TabName, PanelSortName);
             string path = Assembly.GetExecutingAssembly().Location;
 
-            var SortBtnData = new PushButtonData("SortBtnData", "Внедрить\nпараметры", path, "FamilySorting.SortingCommand")
+            var SortBtnData = new PushButtonData("SortBtnData", "Внедрить\nпараметры", path, "FamilySorting.BindingCommand")
             {
                 ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\sh.png", UriKind.Absolute)),
                 ToolTip = "Внедряет общие параметры в семейство, которые позволят его каталогизировать"

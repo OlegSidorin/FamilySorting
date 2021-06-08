@@ -72,10 +72,12 @@
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WriteToExlsCommand.cs" />
-    <Compile Include="SortingCommand.cs" />
+    <Compile Include="BindingCommand.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="FSort.addin" />
+    <None Include="FSort.addin">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="res\Классификатор семейств.xlsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
