@@ -16,6 +16,7 @@
     [Autodesk.Revit.Attributes.Regeneration(Autodesk.Revit.Attributes.RegenerationOption.Manual)]
     class BindingCommand : IExternalCommand
     {
+        public string User { get; set; } = Environment.UserName.ToString();
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
             UIDocument uiDoc = commandData.Application.ActiveUIDocument;
@@ -27,13 +28,20 @@
             bool isExist = false;
             string[] paramtersArray =
             {
-                "МСК_Версия Revit", "МСК_Версия семейства", "КПСП_GUID семейства", "КПСП_Категория", "КПСП_Подкатегория", "КПСП_Статус",  
-                "КПСП_Библиотека семейств", "КПСП_Инструкция", "КПСП_Путь к семейству", "КПСП_Дисциплина", "КПСП_Дата редактирования"
+                "КПСП_GUID семейства", "КПСП_Дисциплина", "КПСП_Категория", "КПСП_Подкатегория", "МСК_Версия Revit", "МСК_Версия семейства", "КПСП_Статус",  
+                "КПСП_Библиотека семейств", "КПСП_Инструкция", "КПСП_Путь к семейству",  "КПСП_Дата редактирования", "КПСП_Автор", "КПСП_Вложенные семейства"
             };
-            string[] paramtersMSKArray =
+            string[] paramtersMSKTypeArray =
             {
-                "МСК_ЕдИзм", "МСК_Завод-изготовитель", "МСК_Код изделия", "МСК_Масса_Текст", "МСК_Наименование", "МСК_Обозначение", "МСК_Позиция", "МСК_Примечание"
+                "МСК_Марка", "МСК_Наименование", "МСК_Завод-изготовитель", "МСК_Материал", "МСК_Описание", "МСК_Масса", "МСК_Масса_Текст",
+                "МСК_Размер_Ширина", "МСК_Размер_Высота", "МСК_Размер_Толщина", "МСК_Размер_Глубина", "МСК_ЕдИзм", "МСК_Примечание", "МСК_Обозначение",
+                "МСК_Позиция на схеме", "avp_Позиция", "avp_Наименование и техническая характеристика", "avp_Завод- изготовитель", "avp_Тип, марка, обозначение документа,"
             };
+            string[] paramtersMSKInstArray =
+            {
+                "МСК_Наименование краткое", "МСК_Код изделия",  "МСК_Позиция"
+            };
+            
             if (doc.IsFamilyDocument)
             {
                 //TaskDialog.Show("Warning", "Privet");
@@ -82,7 +90,7 @@
                             isExist = false;
                         }
                         isExist = false;
-                        foreach (var st in paramtersMSKArray)
+                        foreach (var st in paramtersMSKTypeArray)
                         {
                             foreach (FamilyParameter fp in parametersList)
                             {
@@ -93,7 +101,29 @@
                             {
                                 sharedParameterDefinition = sharedParametersGroup.Definitions.get_Item(st);
                                 externalDefinition = sharedParameterDefinition as ExternalDefinition;
-                                familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_TEXT, false);
+                                if (sharedParameterDefinition.Name == "МСК_Материал")
+                                    familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_MATERIALS, false);
+                                else if (sharedParameterDefinition.Name.Contains("МСК_Размер_"))
+                                    familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_GEOMETRY, false);
+                                else
+                                    familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_TEXT, false);
+                                log += "\nВнедрен параметр <" + st + ">";
+                            }
+                            isExist = false;
+                        }
+                        isExist = false;
+                        foreach (var st in paramtersMSKInstArray)
+                        {
+                            foreach (FamilyParameter fp in parametersList)
+                            {
+                                if (st == fp.Definition.Name)
+                                    isExist = true;
+                            }
+                            if (!isExist)
+                            {
+                                sharedParameterDefinition = sharedParametersGroup.Definitions.get_Item(st);
+                                externalDefinition = sharedParameterDefinition as ExternalDefinition;
+                                familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_TEXT, true);
                                 log += "\nВнедрен параметр <" + st + ">";
                             }
                             isExist = false;
@@ -136,6 +166,10 @@
                         string sDate = String.Format("{0:D2}-{1:D2}-{2}", dayInt, monthInt, today.Year.ToString());
                         familyManager.Set(p, sDate);
                         log += "\nДата редактирования: " + familyType.AsString(p);
+
+                        p = familyManager.get_Parameter("КПСП_Автор");
+                        familyManager.Set(p, User);
+                        log += "\nАвтор: " + familyType.AsString(p);
 
                         t.Commit();
                     }

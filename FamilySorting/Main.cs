@@ -40,6 +40,14 @@
             var SortBtn = panelSort.AddItem(SortBtnData) as PushButton;
             SortBtn.LargeImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\sh-32.png", UriKind.Absolute));
 
+            var ClearBtnData = new PushButtonData("ClearBtnData", "Очистить\nGUID семейства", path, "FamilySorting.ClearCommand")
+            {
+                ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\duster.png", UriKind.Absolute)),
+                ToolTip = "Стирает GUID семейства"
+            };
+            var ClearBtn = panelSort.AddItem(ClearBtnData) as PushButton;
+            ClearBtn.LargeImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\duster-32.png", UriKind.Absolute));
+
             var ExlsBtnData = new PushButtonData("ExlsBtnData", "Записать\nв журнал", path, "FamilySorting.WriteToExlsCommand")
             {
                 ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\exls.png", UriKind.Absolute)),
