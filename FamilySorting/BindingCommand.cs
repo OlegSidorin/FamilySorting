@@ -48,7 +48,7 @@
             {
                 "МСК_Марка", "МСК_Наименование", "МСК_Завод-изготовитель", "МСК_Материал", "МСК_Описание", "МСК_Масса", "МСК_Масса_Текст",
                 "МСК_Размер_Ширина", "МСК_Размер_Высота", "МСК_Размер_Толщина", "МСК_Размер_Глубина", "МСК_ЕдИзм", "МСК_Примечание", "МСК_Обозначение",
-                "МСК_Позиция на схеме", "avp_Позиция", "avp_Наименование и техническая характеристика", "avp_Завод- изготовитель", "avp_Тип, марка, обозначение документа,"
+                //"МСК_Позиция на схеме", "avp_Позиция", "avp_Наименование и техническая характеристика", "avp_Завод- изготовитель", "avp_Тип, марка, обозначение документа,"
             };
             string[] paramtersMSKInstArray =
             {
@@ -183,7 +183,26 @@
                         p = familyManager.get_Parameter("КПСП_Автор");
                         familyManager.Set(p, User);
                         log += "\nАвтор: " + familyType.AsString(p);
-                         
+
+                        var pKey = familyManager.get_Parameter("Код по классификатору");
+                        string pKeyValue = familyType.AsString(pKey);
+
+                        p = familyManager.get_Parameter("КПСП_Дисциплина");
+                        familyManager.Set(p, TableEntry.GetDiscipline(pKeyValue));
+                        log += "\nДисциплина: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
+                        p = familyManager.get_Parameter("КПСП_Категория");
+                        familyManager.Set(p, TableEntry.GetCategory(pKeyValue));
+                        log += "\nКатегория: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
+                        p = familyManager.get_Parameter("КПСП_Подкатегория");
+                        familyManager.Set(p, TableEntry.GetSubCategory(pKeyValue));
+                        log += "\nПодкатегория: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
+                        p = familyManager.get_Parameter("КПСП_Путь к семейству");
+                        familyManager.Set(p, TableEntry.GetPathToFamily(pKeyValue));
+                        log += "\nПуть к семейству: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
+                        p = familyManager.get_Parameter("КПСП_Инструкция");
+                        familyManager.Set(p, TableEntry.GetPathToInstruction(pKeyValue));
+                        log += "\nИнструкция: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
+
                         t.Commit();
                     }
                 }
