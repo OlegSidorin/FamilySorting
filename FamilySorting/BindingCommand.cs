@@ -26,6 +26,19 @@
             string fopFilePath = Path.GetDirectoryName(path) + "\\res\\ФОП.txt";
             string log = "";
             bool isExist = false;
+
+            string assemblyTablePath = Path.GetDirectoryName(path) + "\\res\\Классификатор семейств.txt";
+            var resourceReference = ExternalResourceReference.CreateLocalResource(doc, ExternalResourceTypes.BuiltInExternalResourceTypes.AssemblyCodeTable,
+                ModelPathUtils.ConvertUserVisiblePathToModelPath(assemblyTablePath), PathType.Absolute) as ExternalResourceReference;
+            using (Transaction t = new Transaction(doc, "erer"))
+            {
+                t.Start();
+                AssemblyCodeTable.GetAssemblyCodeTable(doc).LoadFrom(resourceReference, new KeyBasedTreeEntriesLoadResults());
+                t.Commit();
+            }
+
+
+
             string[] paramtersArray =
             {
                 "КПСП_GUID семейства", "КПСП_Дисциплина", "КПСП_Категория", "КПСП_Подкатегория", "МСК_Версия Revit", "МСК_Версия семейства", "КПСП_Статус",  
@@ -53,7 +66,7 @@
                     using (Transaction t = new Transaction(doc, "change"))
                     {
                         t.Start();
-                        familyType = familyManager.NewType("Обобщенные модели");
+                        familyType = familyManager.NewType(doc.Title);
                         familyManager.CurrentType = familyType;
                         t.Commit();
                     }
@@ -84,7 +97,7 @@
                             {
                                 sharedParameterDefinition = sharedParametersGroup.Definitions.get_Item(st);
                                 externalDefinition = sharedParameterDefinition as ExternalDefinition;
-                                familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_DATA, false);
+                                familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_IDENTITY_DATA, false);
                                 log += "\nВнедрен параметр <" + st + ">";
                             }
                             isExist = false;
@@ -154,7 +167,7 @@
                         {
                             Guid famGuid = Guid.NewGuid();
                             familyManager.Set(p, famGuid.ToString());
-                            log += "\nПрисвоили новый Guid семейству: " + familyType.AsString(p);
+                            log += "\nПрисвоен новый Guid семейству: " + familyType.AsString(p);
                         }
 
                         p = familyManager.get_Parameter("КПСП_Дата редактирования");
@@ -170,7 +183,7 @@
                         p = familyManager.get_Parameter("КПСП_Автор");
                         familyManager.Set(p, User);
                         log += "\nАвтор: " + familyType.AsString(p);
-
+                         
                         t.Commit();
                     }
                 }

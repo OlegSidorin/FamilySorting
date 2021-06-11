@@ -32,10 +32,18 @@
             RibbonPanel panelSort = application.CreateRibbonPanel(TabName, PanelSortName);
             string path = Assembly.GetExecutingAssembly().Location;
 
-            var SortBtnData = new PushButtonData("SortBtnData", "Внедрить\nпараметры", path, "FamilySorting.BindingCommand")
+            var ClassBtnData = new PushButtonData("ClassBtnData", "Назначить\nклассификатор", path, "FamilySorting.ClassCommand")
+            {
+                ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\class.png", UriKind.Absolute)),
+                ToolTip = "Подгружает файл классификатора для назначения кода классификатора на семейство"
+            };
+            var ClassBtn = panelSort.AddItem(ClassBtnData) as PushButton;
+            ClassBtn.LargeImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\class-32.png", UriKind.Absolute));
+
+            var SortBtnData = new PushButtonData("SortBtnData", "Добавить\nпараметры", path, "FamilySorting.BindingCommand")
             {
                 ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\sh.png", UriKind.Absolute)),
-                ToolTip = "Внедряет общие параметры в семейство, которые позволят его каталогизировать"
+                ToolTip = "Добавляет общие параметры в семейство, которые позволят его каталогизировать"
             };
             var SortBtn = panelSort.AddItem(SortBtnData) as PushButton;
             SortBtn.LargeImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\sh-32.png", UriKind.Absolute));
