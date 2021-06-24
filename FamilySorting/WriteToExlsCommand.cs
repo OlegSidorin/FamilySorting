@@ -68,25 +68,25 @@
                         var rsFields = new RSFields().GetRSFields(doc);
                         if (ws.ToString() == "Реестр семейств")
                         {
-                            int row = 7;
+                            int row = 2;
                             while ((ws.Cells[row, 1].Value != null) & (ws.Cells[row, 2].Value != null) & (ws.Cells[row, 6].Value != null))
                             {
                                 row += 1;
                             }
-
-                            ws.Cells[row, 1].Value = rsFields.Ssilka;
-                            ws.Cells[row, 2].Value = rsFields.Guid;
-                            ws.Cells[row, 3].Value = rsFields.Disciplina;
-                            ws.Cells[row, 4].Value = rsFields.Kategoria;
-                            ws.Cells[row, 5].Value = rsFields.Podkaterogia;
-                            ws.Cells[row, 6].Value = rsFields.ImiaFaila;
-                            ws.Cells[row, 7].Value = rsFields.Proizvoditel;
-                            ws.Cells[row, 8].Value = rsFields.Marka;
-                            ws.Cells[row, 9].Value = rsFields.Vlozhennie;
-                            ws.Cells[row, 10].Value = rsFields.DataObnovki;
-                            ws.Cells[row, 11].Value = rsFields.Versia;
-                            ws.Cells[row, 12].Value = rsFields.Avtor;
-                            ws.Cells[row, 13].Value = rsFields.VersiaRevita;
+                             
+                            //ws.Cells[row, 1].Value = rsFields.Ssilka;
+                            ws.Cells[row, 1].Value = rsFields.Guid;
+                            ws.Cells[row, 2].Value = rsFields.Disciplina;
+                            ws.Cells[row, 3].Value = rsFields.Kategoria;
+                            ws.Cells[row, 4].Value = rsFields.Podkaterogia;
+                            ws.Cells[row, 5].Value = rsFields.ImiaFaila;
+                            ws.Cells[row, 6].Value = rsFields.Proizvoditel;
+                            ws.Cells[row, 7].Value = rsFields.Marka;
+                            ws.Cells[row, 8].Value = rsFields.Vlozhennie;
+                            ws.Cells[row, 9].Value = rsFields.DataObnovki;
+                            ws.Cells[row, 10].Value = rsFields.Versia;
+                            ws.Cells[row, 11].Value = rsFields.Avtor;
+                            ws.Cells[row, 12].Value = rsFields.VersiaRevita;
 
                         } 
                     }
@@ -96,7 +96,7 @@
                         var rsFields = new RSFields().GetRSFields(doc);
                         if (ws.ToString() == "История изменений")
                         {
-                            int row = 7;
+                            int row = 2;
                             while ((ws.Cells[row, 1].Value != null) & (ws.Cells[row, 2].Value != null))
                             {
                                 row += 1;

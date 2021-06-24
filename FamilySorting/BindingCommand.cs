@@ -157,7 +157,7 @@
                         log += "\n---";
 
                         var p = familyManager.get_Parameter("МСК_Версия Revit");
-                        string build = commandData.Application.Application.VersionNumber.ToString();
+                        string build = "R" + commandData.Application.Application.VersionNumber.ToString();
                         familyManager.Set(p, build);
                         log += "\nНовое значение <МСК_Версия Revit>: " + build;
 
