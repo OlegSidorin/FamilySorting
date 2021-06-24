@@ -44,7 +44,7 @@
                 str += item.Key + ", ";
             }
 
-            TaskDialog.Show("Final", "Файл классификатора загружен" + "\n" + assemblyTablePath + "\n - - - - - -" + str);
+            //TaskDialog.Show("Final", "Файл классификатора загружен" + "\n" + assemblyTablePath + "\n - - - - - -" + str);
 
             return Result.Succeeded;
         }

@@ -11,7 +11,7 @@
     using Autodesk.Revit.UI;
     using Autodesk.Revit.DB;
     using System.Threading;
-
+    
     [Autodesk.Revit.Attributes.Transaction(Autodesk.Revit.Attributes.TransactionMode.Manual)]
     [Autodesk.Revit.Attributes.Regeneration(Autodesk.Revit.Attributes.RegenerationOption.Manual)]
     class ClearCommand : IExternalCommand
@@ -117,7 +117,7 @@
                 TaskDialog.Show("Warning main", "Это не семейство, команда работает только в семействе");
             }
 
-            TaskDialog.Show("Final", log);
+            //TaskDialog.Show("Final", log);
             return Result.Succeeded;
         }
     }

@@ -98,7 +98,7 @@
                                 sharedParameterDefinition = sharedParametersGroup.Definitions.get_Item(st);
                                 externalDefinition = sharedParameterDefinition as ExternalDefinition;
                                 familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_IDENTITY_DATA, false);
-                                log += "\nВнедрен параметр <" + st + ">";
+                                log += "\nДобавлен параметр <" + st + ">";
                             }
                             isExist = false;
                         }
@@ -120,7 +120,7 @@
                                     familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_GEOMETRY, false);
                                 else
                                     familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_TEXT, false);
-                                log += "\nВнедрен параметр <" + st + ">";
+                                log += "\nДобавлен параметр <" + st + ">";
                             }
                             isExist = false;
                         }
@@ -137,7 +137,7 @@
                                 sharedParameterDefinition = sharedParametersGroup.Definitions.get_Item(st);
                                 externalDefinition = sharedParameterDefinition as ExternalDefinition;
                                 familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_TEXT, true);
-                                log += "\nВнедрен параметр <" + st + ">";
+                                log += "\nДобавлен параметр <" + st + ">";
                             }
                             isExist = false;
                         }
@@ -217,7 +217,7 @@
                 TaskDialog.Show("Warning main", "Это не семейство, команда работает только в семействе");
             }
 
-            TaskDialog.Show("Final", log);
+            //TaskDialog.Show("Final", log);
             return Result.Succeeded;
         }
     }

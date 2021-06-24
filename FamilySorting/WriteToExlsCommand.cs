@@ -12,12 +12,17 @@
     using Autodesk.Revit.DB;
     using System.Diagnostics;
     using OfficeOpenXml;
+    using System.Windows.Forms;
+
+    //using Microsoft.Win32;
+
 
     [Autodesk.Revit.Attributes.Transaction(Autodesk.Revit.Attributes.TransactionMode.Manual)]
     [Autodesk.Revit.Attributes.Regeneration(Autodesk.Revit.Attributes.RegenerationOption.Manual)]
     class WriteToExlsCommand : IExternalCommand
     {
-        public string FolderPath { get; set; } = "K:\\Подразделения\\ТИМ\\Обмен\\Проект автоматизация семейств\\Реестр семейств";
+
+    public string FolderPath { get; set; } = "K:\\Подразделения\\ТИМ\\Обмен\\Проект автоматизация семейств\\Реестр семейств";
 
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
@@ -26,26 +31,88 @@
             string path = Assembly.GetExecutingAssembly().Location;
             //string originalFile = app.SharedParametersFilename;
             string fopFilePath = Path.GetDirectoryName(path) + "\\res\\ФОП.txt";
+
+            //var fileContent = string.Empty;
+            var filePath = string.Empty;
+
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.InitialDirectory = "K:\\Подразделения\\ТИМ\\Обмен\\Проект автоматизация семейств\\Реестр семейств";
+                openFileDialog.Filter = "Excel files (*.xlsx, *.xlsm) | *.xlsx; *.xlsm";
+                //openFileDialog.FilterIndex = 2;
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    //Get the path of specified file
+                    filePath = openFileDialog.FileName;
+
+                    //Read the contents of the file into a stream
+                    //var fileStream = openFileDialog.OpenFile();
+
+                    //using (StreamReader reader = new StreamReader(fileStream))
+                    //{
+                    //    fileContent = reader.ReadToEnd();
+                    //}
+                }
+            }
             if (doc.IsFamilyDocument)
             {
-                TaskDialog.Show("Warning", "Privet");
-                
-                //try
-                //{
-                //    var p = familyManager.get_Parameter("МСК_Версия Revit");
-                //    using (Transaction t = new Transaction(doc, "Set"))
-                //    {
-                //        t.Start();
-                //        string build = commandData.Application.Application.VersionNumber.ToString();
-                //        familyManager.Set(p, build);
-                //        t.Commit();
-                //    }
-                                
-                //}
-                //catch (Exception e)
-                //{
-                //    TaskDialog.Show("Warning", e.ToString());
-                //}
+                using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath)))
+                {
+                    //create an instance of the the first sheet in the loaded file
+                    //ExcelWorksheet worksheet;
+                    foreach (var ws in excelPackage.Workbook.Worksheets)
+                    {
+                        //add data
+                        var rsFields = new RSFields().GetRSFields(doc);
+                        if (ws.ToString() == "Реестр семейств")
+                        {
+                            int row = 7;
+                            while ((ws.Cells[row, 1].Value != null) & (ws.Cells[row, 2].Value != null) & (ws.Cells[row, 6].Value != null))
+                            {
+                                row += 1;
+                            }
+
+                            ws.Cells[row, 1].Value = rsFields.Ssilka;
+                            ws.Cells[row, 2].Value = rsFields.Guid;
+                            ws.Cells[row, 3].Value = rsFields.Disciplina;
+                            ws.Cells[row, 4].Value = rsFields.Kategoria;
+                            ws.Cells[row, 5].Value = rsFields.Podkaterogia;
+                            ws.Cells[row, 6].Value = rsFields.ImiaFaila;
+                            ws.Cells[row, 7].Value = rsFields.Proizvoditel;
+                            ws.Cells[row, 8].Value = rsFields.Marka;
+                            ws.Cells[row, 9].Value = rsFields.Vlozhennie;
+                            ws.Cells[row, 10].Value = rsFields.DataObnovki;
+                            ws.Cells[row, 11].Value = rsFields.Versia;
+                            ws.Cells[row, 12].Value = rsFields.Avtor;
+                            ws.Cells[row, 13].Value = rsFields.VersiaRevita;
+
+                        } 
+                    }
+                    foreach (var ws in excelPackage.Workbook.Worksheets)
+                    {
+                        //add data
+                        var rsFields = new RSFields().GetRSFields(doc);
+                        if (ws.ToString() == "История изменений")
+                        {
+                            int row = 7;
+                            while ((ws.Cells[row, 1].Value != null) & (ws.Cells[row, 2].Value != null))
+                            {
+                                row += 1;
+                            }
+                            ws.Cells[row, 1].Value = rsFields.Guid;
+                            ws.Cells[row, 2].Value = rsFields.ImiaFaila;
+                            ws.Cells[row, 3].Value = rsFields.DataObnovki;
+                            ws.Cells[row, 4].Value = rsFields.Avtor;
+
+                        }
+                    }
+                    //save the changes
+                    excelPackage.Save();
+                }
+
+
             }
             else
             {
@@ -256,5 +323,98 @@
             }
         }
         #endregion
+    }
+
+    public class RSFields
+    {
+        public string Ssilka { get; set; }
+        public string Guid { get; set; }
+        public string Disciplina { get; set; }
+        public string Kategoria { get; set; }
+        public string Podkaterogia { get; set; }
+        public string ImiaFaila { get; set; }
+        public string Proizvoditel { get; set; }
+        public string Marka { get; set; }
+        public string Vlozhennie { get; set; }
+        public string DataObnovki { get; set; }
+        public string Versia { get; set; }
+        public string Avtor { get; set; }
+        public string VersiaRevita { get; set; }
+
+        public RSFields GetRSFields0()
+        {
+            return new RSFields
+            {
+                Ssilka = "Иди туда",
+                Guid = "111-000",
+                Disciplina = "Архитектура",
+                Kategoria = "Стена",
+                Podkaterogia = "Какая-то",
+                ImiaFaila = "Имя файлика",
+                Proizvoditel = "Допустим АУРУС",
+                Marka = "Марка",
+                Vlozhennie = "Ничего",
+                DataObnovki = "Сегодня",
+                Versia = "21",
+                Avtor = "Не я",
+                VersiaRevita = "2022"
+            };
+        }
+        public RSFields GetRSFields(Document doc)
+        {
+            var rsFields = new RSFields
+            {
+                Ssilka = "",
+                Guid = "",
+                Disciplina = "",
+                Kategoria = "",
+                Podkaterogia = "",
+                ImiaFaila = "",
+                Proizvoditel = "",
+                Marka = "",
+                Vlozhennie = "",
+                DataObnovki = "",
+                Versia = "",
+                Avtor = "",
+                VersiaRevita = ""
+            };
+            FamilyManager familyManager = doc.FamilyManager;
+            var familyType = familyManager.CurrentType;
+            try
+            {
+                var p = familyManager.get_Parameter("КПСП_Путь к семейству");
+                rsFields.Ssilka = familyType.AsString(p);
+                p = familyManager.get_Parameter("КПСП_GUID семейства");
+                rsFields.Guid = familyType.AsString(p);
+                p = familyManager.get_Parameter("КПСП_Дисциплина");
+                rsFields.Disciplina = familyType.AsString(p);
+                p = familyManager.get_Parameter("КПСП_Категория");
+                rsFields.Kategoria = familyType.AsString(p);
+                p = familyManager.get_Parameter("КПСП_Подкатегория");
+                rsFields.Podkaterogia = familyType.AsString(p);
+                p = familyManager.get_Parameter("МСК_Завод-изготовитель");
+                rsFields.Proizvoditel = familyType.AsString(p);
+                p = familyManager.get_Parameter("МСК_Марка");
+                rsFields.Marka = familyType.AsString(p);
+                p = familyManager.get_Parameter("КПСП_Вложенные семейства");
+                rsFields.Vlozhennie = familyType.AsString(p);
+                p = familyManager.get_Parameter("КПСП_Дата редактирования");
+                rsFields.DataObnovki = familyType.AsString(p);
+                p = familyManager.get_Parameter("МСК_Версия семейства");
+                rsFields.Versia = familyType.AsString(p);
+                rsFields.ImiaFaila = doc.Title.ToString() + ".rfa";
+                p = familyManager.get_Parameter("МСК_Версия Revit");
+                rsFields.VersiaRevita = familyType.AsString(p);
+                p = familyManager.get_Parameter("КПСП_Автор");
+                rsFields.Avtor = familyType.AsString(p);
+            }
+            catch
+            {
+
+            }
+
+            return rsFields;
+        }
+
     }
 }
