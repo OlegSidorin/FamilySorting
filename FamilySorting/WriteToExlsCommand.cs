@@ -394,7 +394,7 @@
                 rsFields.Podkaterogia = familyType.AsString(p);
                 p = familyManager.get_Parameter("МСК_Завод-изготовитель");
                 rsFields.Proizvoditel = familyType.AsString(p);
-                p = familyManager.get_Parameter("МСК_Марка");
+                p = familyManager.get_Parameter("МСК_Обозначение");
                 rsFields.Marka = familyType.AsString(p);
                 p = familyManager.get_Parameter("КПСП_Вложенные семейства");
                 rsFields.Vlozhennie = familyType.AsString(p);

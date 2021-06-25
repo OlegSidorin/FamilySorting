@@ -97,7 +97,7 @@
                             {
                                 sharedParameterDefinition = sharedParametersGroup.Definitions.get_Item(st);
                                 externalDefinition = sharedParameterDefinition as ExternalDefinition;
-                                familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_IDENTITY_DATA, false);
+                                familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_ADSK_MODEL_PROPERTIES, false);
                                 log += "\nДобавлен параметр <" + st + ">";
                             }
                             isExist = false;
@@ -170,6 +170,23 @@
                             log += "\nПрисвоен новый Guid семейству: " + familyType.AsString(p);
                         }
 
+                        p = familyManager.get_Parameter("МСК_Версия семейства");
+                        string vs = familyType.AsString(p);
+                        int vs_int = 1;
+                        if (vs != "")
+                        {
+                            int.TryParse(vs, out vs_int);
+                            vs_int += 1;
+                            familyManager.Set(p, vs_int.ToString());
+                            log += "\nВерсия семейства: " + familyType.AsString(p);
+                        }
+                        if (vs == "")
+                        {
+                            familyManager.Set(p, "1");
+                            log += "\nВерсия семейства: " + familyType.AsString(p);
+                        }
+                        
+
                         p = familyManager.get_Parameter("КПСП_Дата редактирования");
 
                         DateTime today = DateTime.Now;
@@ -202,6 +219,28 @@
                         p = familyManager.get_Parameter("КПСП_Инструкция");
                         familyManager.Set(p, TableEntry.GetPathToInstruction(pKeyValue));
                         log += "\nИнструкция: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
+
+                        IList<FamilyInstance> vlozhennieSemeistva = new FilteredElementCollector(doc).OfClass(typeof(FamilyInstance)).WhereElementIsNotElementType().Cast<FamilyInstance>().ToList();
+                        string spisokSemeistv = "";
+                        int i = 0;
+                        int vsegoSemeistv = vlozhennieSemeistva.Count;
+                        string estObschieSemeistva = "Нет";
+                        foreach (FamilyInstance fi in vlozhennieSemeistva)
+                        {
+                            if (i == 0)
+                                spisokSemeistv += "всего " + vsegoSemeistv.ToString() + ": ";
+                            if (i != 0)
+                                spisokSemeistv += ", ";
+                            FamilySymbol fType = fi.Symbol;
+                            Family fam = fType.Family;
+                            spisokSemeistv += fam.Name;
+                            i += 1;
+                        }
+                        if (spisokSemeistv.Contains("КПСП"))
+                            estObschieSemeistva = "Да";
+                        p = familyManager.get_Parameter("КПСП_Вложенные семейства");
+                        familyManager.Set(p, estObschieSemeistva);
+                        log += "\nСемейства: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
 
                         t.Commit();
                     }

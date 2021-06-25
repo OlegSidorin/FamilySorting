@@ -28,7 +28,7 @@
             bool isExist = false;
             string[] paramtersArray =
             {
-                "КПСП_GUID семейства"
+                "КПСП_GUID семейства", "МСК_Версия семейства"
             };
             
             if (doc.IsFamilyDocument)
@@ -42,7 +42,7 @@
                     using (Transaction t = new Transaction(doc, "change"))
                     {
                         t.Start();
-                        familyType = familyManager.NewType("Обобщенные модели");
+                        familyType = familyManager.NewType("Тип 1");
                         familyManager.CurrentType = familyType;
                         t.Commit();
                     }
@@ -73,10 +73,11 @@
                             {
                                 sharedParameterDefinition = sharedParametersGroup.Definitions.get_Item(st);
                                 externalDefinition = sharedParameterDefinition as ExternalDefinition;
-                                familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_DATA, false);
-                                log += "\nВнедрен параметр <" + st + ">";
+                                familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_ADSK_MODEL_PROPERTIES, false);
+                                log += "\nДобавлен параметр <" + st + ">";
                             }
                             isExist = false;
+
                         }
                         isExist = false;
                         
@@ -101,6 +102,14 @@
                         {
                             familyManager.Set(p, "");
                             log += "\nКПСП_GUID семейства пуст ";
+                        }
+
+                        p = familyManager.get_Parameter("МСК_Версия семейства");
+
+                        if (familyType.AsString(p) != "")
+                        {
+                            familyManager.Set(p, "");
+                            log += "\nМСК_Версия семейства пуст ";
                         }
 
                         t.Commit();
