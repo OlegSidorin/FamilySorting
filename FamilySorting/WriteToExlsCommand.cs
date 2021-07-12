@@ -13,6 +13,7 @@
     using System.Diagnostics;
     using OfficeOpenXml;
     using System.Windows.Forms;
+    using System.Data;
 
     //using Microsoft.Win32;
 
@@ -58,6 +59,27 @@
             }
             if (doc.IsFamilyDocument)
             {
+                IList<FamilyInstance> vlozhennieSemeistva = new FilteredElementCollector(doc).OfClass(typeof(FamilyInstance)).WhereElementIsNotElementType().Cast<FamilyInstance>().ToList();
+                List<string> guids = new List<string>();
+                List<string> guidsDistinct = new List<string>();
+                int guidsVsego = 0;
+                foreach (FamilyInstance fi in vlozhennieSemeistva)
+                {
+                    FamilySymbol fType = fi.Symbol;
+                    Family fam = fType.Family;
+                    try
+                    {
+                        string str = fType.get_Parameter(new Guid("11b18c00-5d82-4226-8b5f-74526a7ec4f8")).AsString();
+                        guids.Add(str);
+                        guidsVsego += 1;
+                    }
+                    catch
+                    {
+                        // do nothing
+                    }
+                    guidsDistinct = guids.Distinct().ToList();
+                }
+
                 using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath)))
                 {
                     //create an instance of the the first sheet in the loaded file
@@ -69,11 +91,17 @@
                         if (ws.ToString() == "Реестр семейств")
                         {
                             int row = 2;
+                            int rowIfExsist = 0;
                             while ((ws.Cells[row, 1].Value != null) & (ws.Cells[row, 2].Value != null) & (ws.Cells[row, 6].Value != null))
                             {
+                                if (ws.Cells[row, 1].Value.ToString() == rsFields.Guid)
+                                    rowIfExsist = row;
                                 row += 1;
                             }
-                             
+
+                            if (rowIfExsist != 0)
+                                row = rowIfExsist;
+
                             //ws.Cells[row, 1].Value = rsFields.Ssilka;
                             ws.Cells[row, 1].Value = rsFields.Guid;
                             ws.Cells[row, 2].Value = rsFields.Disciplina;
@@ -90,6 +118,7 @@
 
                         } 
                     }
+
                     foreach (var ws in excelPackage.Workbook.Worksheets)
                     {
                         //add data
@@ -105,6 +134,27 @@
                             ws.Cells[row, 2].Value = rsFields.ImiaFaila;
                             ws.Cells[row, 3].Value = rsFields.DataObnovki;
                             ws.Cells[row, 4].Value = rsFields.Avtor;
+
+                        }
+                    }
+
+                    foreach (var ws in excelPackage.Workbook.Worksheets)
+                    {
+                        //add data
+                        var rsFields = new RSFields().GetRSFields(doc);
+                        if (ws.ToString() == "Связь вложенных семейств")
+                        {
+                            int row = 2;
+                            while ((ws.Cells[row, 1].Value != null) & (ws.Cells[row, 2].Value != null))
+                            {
+                                row += 1;
+                            }
+                            for (int i = 0; i < guidsDistinct.Count; i++)
+                            {
+                                ws.Cells[row + i, 1].Value = rsFields.Guid;
+                                ws.Cells[row + i, 2].Value = guidsDistinct[i];
+                            }
+                            
 
                         }
                     }

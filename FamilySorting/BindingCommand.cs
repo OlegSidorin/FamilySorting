@@ -157,7 +157,7 @@
                         log += "\n---";
 
                         var p = familyManager.get_Parameter("МСК_Версия Revit");
-                        string build = "R" + commandData.Application.Application.VersionNumber.ToString();
+                        string build = "R" + commandData.Application.Application.VersionNumber.ToString().Remove(0,2);
                         familyManager.Set(p, build);
                         log += "\nНовое значение <МСК_Версия Revit>: " + build;
 
@@ -225,6 +225,7 @@
                         int i = 0;
                         int vsegoSemeistv = vlozhennieSemeistva.Count;
                         string estObschieSemeistva = "Нет";
+                        List<string> guids = new List<string>();
                         foreach (FamilyInstance fi in vlozhennieSemeistva)
                         {
                             if (i == 0)
@@ -233,11 +234,22 @@
                                 spisokSemeistv += ", ";
                             FamilySymbol fType = fi.Symbol;
                             Family fam = fType.Family;
-                            spisokSemeistv += fam.Name;
+                            spisokSemeistv += fam.Name; // + "(" + fam.get_Parameter(new Guid("11b18c00-5d82-4226-8b5f-74526a7ec4f8")) + ")";
+                            try
+                            {
+                                string str = fType.get_Parameter(new Guid("11b18c00-5d82-4226-8b5f-74526a7ec4f8")).AsString();
+                                spisokSemeistv += "(" + str + ")";
+                                estObschieSemeistva = "Да" + "(" + str + ")";
+                            }
+                            catch
+                            {
+                                // do nothing
+                            }
                             i += 1;
                         }
-                        if (spisokSemeistv.Contains("КПСП"))
-                            estObschieSemeistva = "Да";
+                        
+                        //if (spisokSemeistv.Contains("КПСП"))
+                        //    estObschieSemeistva = "Да";
                         p = familyManager.get_Parameter("КПСП_Вложенные семейства");
                         familyManager.Set(p, estObschieSemeistva);
                         log += "\nСемейства: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);

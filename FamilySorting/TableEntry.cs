@@ -8,23 +8,23 @@ namespace FamilySorting
 {
     public class TableEntry
     {
-        private string Key { get; set; }
-        private string CategoryR { get; set; }
+        public string Key { get; set; }
+        public string CategoryR { get; set; }
         public string Discipline { get; set; }
-        private string Category { get; set; }
-        private string SubCategory { get; set; }
-        private string PathToFamily { get; set; }
-        private string PathToInstruction { get; set; }
+        public string Category { get; set; }
+        public string SubCategory { get; set; }
+        public string PathToFamily { get; set; }
+        public string PathToInstruction { get; set; }
 
-        public TableEntry(string k, string cr, string d, string c, string sc, string ptf, string pti)
+        public TableEntry(string _key, string _categoryR, string _discipline, string _category, string _subCategory, string _pathToFamily, string _pathToInstruction)
         {
-            Key = k;
-            CategoryR = cr;
-            Discipline = d;
-            Category = c;
-            SubCategory = sc;
-            PathToFamily = ptf;
-            PathToInstruction = pti;
+            Key = _key;
+            CategoryR = _categoryR;
+            Discipline = _discipline;
+            Category = _category;
+            SubCategory = _subCategory;
+            PathToFamily = _pathToFamily;
+            PathToInstruction = _pathToInstruction;
         }
 
         private static  List<TableEntry> GetTableEntries()
