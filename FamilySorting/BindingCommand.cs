@@ -239,7 +239,7 @@
                             {
                                 string str = fType.get_Parameter(new Guid("11b18c00-5d82-4226-8b5f-74526a7ec4f8")).AsString();
                                 spisokSemeistv += "(" + str + ")";
-                                estObschieSemeistva = "Да" + "(" + str + ")";
+                                estObschieSemeistva = "Да";
                             }
                             catch
                             {

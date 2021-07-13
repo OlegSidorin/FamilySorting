@@ -13,7 +13,6 @@
     using System.Diagnostics;
     using OfficeOpenXml;
     using System.Windows.Forms;
-    using System.Data;
 
     //using Microsoft.Win32;
 
@@ -145,16 +144,39 @@
                         if (ws.ToString() == "Связь вложенных семейств")
                         {
                             int row = 2;
+                            List<int> rows = new List<int>();
                             while ((ws.Cells[row, 1].Value != null) & (ws.Cells[row, 2].Value != null))
                             {
+                                foreach (var guid in guidsDistinct)
+                                {
+                                    if (ws.Cells[row, 2].Value.ToString() == guid)
+                                    {
+                                        if (ws.Cells[row, 1].Value.ToString() == rsFields.Guid)
+                                        {
+                                            rows.Add(row);
+                                        }
+                                    }
+                                }
+                                
                                 row += 1;
                             }
+
                             for (int i = 0; i < guidsDistinct.Count; i++)
                             {
                                 ws.Cells[row + i, 1].Value = rsFields.Guid;
                                 ws.Cells[row + i, 2].Value = guidsDistinct[i];
+                                ws.Cells[row + i, 3].Value = string.Join(", ", rows);
                             }
-                            
+
+                            if (rows.Count != 0)
+                            {
+                                int shift = 0;
+                                foreach (var r in rows)
+                                {
+                                    ws.DeleteRow(r - shift, 1, true);
+                                    shift += 1;
+                                }
+                            }
 
                         }
                     }
