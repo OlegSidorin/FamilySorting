@@ -181,7 +181,15 @@
                         }
                     }
                     //save the changes
-                    excelPackage.Save();
+                    try
+                    {
+                        excelPackage.Save();
+                    }
+                    catch
+                    {
+                        TaskDialog.Show("Warning", "Невозможно произвести запись в файл..");
+                    }
+                    
                 }
 
 

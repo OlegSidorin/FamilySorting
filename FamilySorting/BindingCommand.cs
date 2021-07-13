@@ -213,8 +213,10 @@
                         p = familyManager.get_Parameter("КПСП_Подкатегория");
                         familyManager.Set(p, TableEntry.GetSubCategory(pKeyValue));
                         log += "\nПодкатегория: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
+
                         p = familyManager.get_Parameter("КПСП_Путь к семейству");
-                        familyManager.Set(p, TableEntry.GetPathToFamily(pKeyValue));
+                        familyManager.Set(p, TableEntry.GetPathToFamily(pKeyValue).Replace("0_Библиотека семейств", "0_Библиотека семейств " + build));
+
                         log += "\nПуть к семейству: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
                         p = familyManager.get_Parameter("КПСП_Инструкция");
                         familyManager.Set(p, TableEntry.GetPathToInstruction(pKeyValue));
@@ -265,7 +267,7 @@
             }
             else
             {
-                TaskDialog.Show("Warning main", "Это не семейство, команда работает только в семействе");
+                TaskDialog.Show("Warning", "Это не семейство, команда работает только в семействе");
             }
 
             //TaskDialog.Show("Final", log);

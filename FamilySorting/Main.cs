@@ -34,7 +34,7 @@
 
             var ClassBtnData = new PushButtonData("ClassBtnData", "Назначить\nклассификатор", path, "FamilySorting.ClassCommand")
             {
-                ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\class.png", UriKind.Absolute)),
+                ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\class-32.png", UriKind.Absolute)),
                 ToolTip = "Подгружает файл классификатора для назначения кода классификатора на семейство"
             };
             var ClassBtn = panelSort.AddItem(ClassBtnData) as PushButton;
@@ -42,7 +42,7 @@
 
             var AddParamsBtnData = new PushButtonData("AddParamsBtnData", "Добавить\nпараметры", path, "FamilySorting.BindingCommand")
             {
-                ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\sh.png", UriKind.Absolute)),
+                ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\sh-32.png", UriKind.Absolute)),
                 ToolTip = "Добавляет общие параметры в семейство, которые позволят его каталогизировать"
             };
             //var SortBtn = panelSort.AddItem(SortBtnData) as PushButton;
@@ -50,7 +50,7 @@
 
             var ClearBtnData = new PushButtonData("ClearBtnData", "Очистить\nGUID семейства", path, "FamilySorting.ClearCommand")
             {
-                ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\duster.png", UriKind.Absolute)),
+                ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\duster-32.png", UriKind.Absolute)),
                 ToolTip = "Стирает GUID семейства и его версию, для создания нового семейства на основе данного, например."
             };
             //var ClearBtn = panelSort.AddItem(ClearBtnData) as PushButton;
@@ -63,11 +63,19 @@
 
             var ExlsBtnData = new PushButtonData("ExlsBtnData", "Записать\nв журнал", path, "FamilySorting.WriteToExlsCommand")
             {
-                ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\exls.png", UriKind.Absolute)),
+                ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\exls-32.png", UriKind.Absolute)),
                 ToolTip = "Записывает параметры в журнал"
             };
             var ExlsBtn = panelSort.AddItem(ExlsBtnData) as PushButton;
             ExlsBtn.LargeImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\exls-32.png", UriKind.Absolute));
+
+            var SaveBtnData = new PushButtonData("SaveBtnData", "Сохранить\nна диск", path, "FamilySorting.SaveCommand")
+            {
+                ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\save-32.png", UriKind.Absolute)),
+                ToolTip = "Сохраняет семейство в библиотеку"
+            };
+            var SaveBtn = panelSort.AddItem(SaveBtnData) as PushButton;
+            SaveBtn.LargeImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\save-32.png", UriKind.Absolute));
 
             return Result.Succeeded;
         }
