@@ -21,9 +21,8 @@
         {
             UIDocument uiDoc = commandData.Application.ActiveUIDocument;
             Document doc = uiDoc.Document;
-            string path = Assembly.GetExecutingAssembly().Location;
             //string originalFile = app.SharedParametersFilename;
-            string fopFilePath = Path.GetDirectoryName(path) + "\\res\\ФОП.txt";
+            string fopFilePath = Main.FOPPath;
             string log = "";
             bool isExist = false;
             string[] paramtersArray =

@@ -16,51 +16,27 @@
 
     //using Microsoft.Win32;
 
-
-    [Autodesk.Revit.Attributes.Transaction(Autodesk.Revit.Attributes.TransactionMode.Manual)]
-    [Autodesk.Revit.Attributes.Regeneration(Autodesk.Revit.Attributes.RegenerationOption.Manual)]
-    class WriteToExlsCommand : IExternalCommand
+    class WriteToExls
     {
 
-        public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
+        public static void Write(UIDocument uiDoc)
         {
-            UIDocument uiDoc = commandData.Application.ActiveUIDocument;
+            
             Document doc = uiDoc.Document;
             string path = Assembly.GetExecutingAssembly().Location;
-            //string originalFile = app.SharedParametersFilename;
             string fopFilePath = Path.GetDirectoryName(path) + "\\res\\ФОП.txt";
             bool polnoyeSovpadenie = false;
             bool allOk = false;
-            //var fileContent = string.Empty;
-            var filePath = string.Empty;
-
-            using (OpenFileDialog openFileDialog = new OpenFileDialog())
-            {
-                openFileDialog.InitialDirectory = Main.FolderReestrPath;
-                openFileDialog.Filter = "Excel files (*.xlsx, *.xlsm) | *.xlsx; *.xlsm";
-                //openFileDialog.FilterIndex = 2;
-                openFileDialog.RestoreDirectory = true;
-
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    //Get the path of specified file
-                    filePath = openFileDialog.FileName;
-
-                    //Read the contents of the file into a stream
-                    //var fileStream = openFileDialog.OpenFile();
-
-                    //using (StreamReader reader = new StreamReader(fileStream))
-                    //{
-                    //    fileContent = reader.ReadToEnd();
-                    //}
-                }
-            }
+            var filePath = Main.ReestrPath;
+            var rsf = new RS_Fields();
+            
             if (doc.IsFamilyDocument)
             {
                 IList<FamilyInstance> vlozhennieSemeistva = new FilteredElementCollector(doc).OfClass(typeof(FamilyInstance)).WhereElementIsNotElementType().Cast<FamilyInstance>().ToList();
                 List<string> guids = new List<string>();
                 List<string> guidsDistinct = new List<string>();
                 int guidsVsego = 0;
+
                 foreach (FamilyInstance fi in vlozhennieSemeistva)
                 {
                     FamilySymbol fType = fi.Symbol;
@@ -85,24 +61,24 @@
                     foreach (var ws in excelPackage.Workbook.Worksheets)
                     {
                         //add data
-                        var rsFields = new RSFields().GetRSFields(doc);
+                        
                         if (ws.ToString() == "Реестр семейств")
                         {
                             int row = 2;
                             int rowIfExsist = 0;
                             while ((ws.Cells[row, 1].Value != null) & (ws.Cells[row, 2].Value != null) & (ws.Cells[row, 6].Value != null))
                             {
-                                if (ws.Cells[row, 1].Value.ToString() == rsFields.Guid)
+                                if (ws.Cells[row, 1].Value.ToString() == RS_Fields.Guid)
                                     rowIfExsist = row;
                                 row += 1;
                             }
 
                             if (rowIfExsist != 0)
                             {
-                                if (ws.Cells[rowIfExsist, 2].Value.ToString() == rsFields.Disciplina && 
-                                    ws.Cells[rowIfExsist, 3].Value.ToString() == rsFields.Kategoria && 
-                                    ws.Cells[rowIfExsist, 3].Value.ToString() == rsFields.Podkaterogia && 
-                                    ws.Cells[rowIfExsist, 3].Value.ToString() == rsFields.ImiaFaila
+                                if (ws.Cells[rowIfExsist, 2].Value.ToString() == RS_Fields.Disciplina && 
+                                    ws.Cells[rowIfExsist, 3].Value.ToString() == RS_Fields.Kategoria && 
+                                    ws.Cells[rowIfExsist, 3].Value.ToString() == RS_Fields.Podkaterogia && 
+                                    ws.Cells[rowIfExsist, 3].Value.ToString() == RS_Fields.ImiaFaila
                                     )
                                 {
                                     polnoyeSovpadenie = true;
@@ -116,18 +92,18 @@
 
                             if (polnoyeSovpadenie || (!polnoyeSovpadenie && (rowIfExsist == 0)))
                             {
-                                ws.Cells[row, 1].Value = rsFields.Guid;
-                                ws.Cells[row, 2].Value = rsFields.Disciplina;
-                                ws.Cells[row, 3].Value = rsFields.Kategoria;
-                                ws.Cells[row, 4].Value = rsFields.Podkaterogia;
-                                ws.Cells[row, 5].Value = rsFields.ImiaFaila;
-                                ws.Cells[row, 6].Value = rsFields.Proizvoditel;
-                                ws.Cells[row, 7].Value = rsFields.Marka;
-                                ws.Cells[row, 8].Value = rsFields.Vlozhennie;
-                                ws.Cells[row, 9].Value = rsFields.DataObnovki;
-                                ws.Cells[row, 10].Value = rsFields.Versia;
-                                ws.Cells[row, 11].Value = rsFields.Avtor;
-                                ws.Cells[row, 12].Value = rsFields.VersiaRevita;
+                                ws.Cells[row, 1].Value = RS_Fields.Guid;
+                                ws.Cells[row, 2].Value = RS_Fields.Disciplina;
+                                ws.Cells[row, 3].Value = RS_Fields.Kategoria;
+                                ws.Cells[row, 4].Value = RS_Fields.Podkaterogia;
+                                ws.Cells[row, 5].Value = RS_Fields.ImiaFaila;
+                                ws.Cells[row, 6].Value = RS_Fields.Proizvoditel;
+                                ws.Cells[row, 7].Value = RS_Fields.Marka;
+                                ws.Cells[row, 8].Value = RS_Fields.Vlozhennie;
+                                ws.Cells[row, 9].Value = RS_Fields.DataObnovki;
+                                ws.Cells[row, 10].Value = RS_Fields.Versia;
+                                ws.Cells[row, 11].Value = RS_Fields.Avtor;
+                                ws.Cells[row, 12].Value = RS_Fields.VersiaRevita;
                                 allOk = true;
                             }
                             else
@@ -143,7 +119,6 @@
                     foreach (var ws in excelPackage.Workbook.Worksheets)
                     {
                         //add data
-                        var rsFields = new RSFields().GetRSFields(doc);
                         if (ws.ToString() == "История изменений")
                         {
                             int row = 2;
@@ -151,10 +126,10 @@
                             {
                                 row += 1;
                             }
-                            ws.Cells[row, 1].Value = rsFields.Guid;
-                            ws.Cells[row, 2].Value = rsFields.ImiaFaila;
-                            ws.Cells[row, 3].Value = rsFields.DataObnovki;
-                            ws.Cells[row, 4].Value = rsFields.Avtor;
+                            ws.Cells[row, 1].Value = RS_Fields.Guid;
+                            ws.Cells[row, 2].Value = RS_Fields.ImiaFaila;
+                            ws.Cells[row, 3].Value = RS_Fields.DataObnovki;
+                            ws.Cells[row, 4].Value = RS_Fields.Avtor;
                             ws.Cells[row, 5].Value = Main.Comment;
 
                         }
@@ -163,7 +138,6 @@
                     foreach (var ws in excelPackage.Workbook.Worksheets)
                     {
                         //add data
-                        var rsFields = new RSFields().GetRSFields(doc);
                         if (ws.ToString() == "Связь вложенных семейств")
                         {
                             int row = 2;
@@ -174,7 +148,7 @@
                                 {
                                     if (ws.Cells[row, 2].Value.ToString() == guid)
                                     {
-                                        if (ws.Cells[row, 1].Value.ToString() == rsFields.Guid)
+                                        if (ws.Cells[row, 1].Value.ToString() == RS_Fields.Guid)
                                         {
                                             rows.Add(row);
                                         }
@@ -186,7 +160,7 @@
 
                             for (int i = 0; i < guidsDistinct.Count; i++)
                             {
-                                ws.Cells[row + i, 1].Value = rsFields.Guid;
+                                ws.Cells[row + i, 1].Value = RS_Fields.Guid;
                                 ws.Cells[row + i, 2].Value = guidsDistinct[i];
                                 ws.Cells[row + i, 3].Value = string.Join(", ", rows);
                             }
@@ -230,7 +204,6 @@
             {
                 TaskDialog.Show("Warning", "Это не семейство, команда работает только в семействе");
             }
-            return Result.Succeeded;
         }
 
 
@@ -437,95 +410,59 @@
         #endregion
     }
 
-    public class RSFields
+    public class RS_Fields
     {
-        public string Ssilka { get; set; }
-        public string Guid { get; set; }
-        public string Disciplina { get; set; }
-        public string Kategoria { get; set; }
-        public string Podkaterogia { get; set; }
-        public string ImiaFaila { get; set; }
-        public string Proizvoditel { get; set; }
-        public string Marka { get; set; }
-        public string Vlozhennie { get; set; }
-        public string DataObnovki { get; set; }
-        public string Versia { get; set; }
-        public string Avtor { get; set; }
-        public string VersiaRevita { get; set; }
+        public static string Ssilka { get; set; }
+        public static string Guid { get; set; }
+        public static string Disciplina { get; set; }
+        public static string Kategoria { get; set; }
+        public static string Podkaterogia { get; set; }
+        public static string ImiaFaila { get; set; }
+        public static string Proizvoditel { get; set; }
+        public static string Marka { get; set; }
+        public static string Vlozhennie { get; set; }
+        public static string DataObnovki { get; set; }
+        public static string Versia { get; set; }
+        public static string Avtor { get; set; }
+        public static string VersiaRevita { get; set; }
 
-        public RSFields GetRSFields0()
+       
+        public static void Get_Fields(Document doc)
         {
-            return new RSFields
-            {
-                Ssilka = "Иди туда",
-                Guid = "111-000",
-                Disciplina = "Архитектура",
-                Kategoria = "Стена",
-                Podkaterogia = "Какая-то",
-                ImiaFaila = "Имя файлика",
-                Proizvoditel = "Допустим АУРУС",
-                Marka = "Марка",
-                Vlozhennie = "Ничего",
-                DataObnovki = "Сегодня",
-                Versia = "21",
-                Avtor = "Не я",
-                VersiaRevita = "2022"
-            };
-        }
-        public RSFields GetRSFields(Document doc)
-        {
-            var rsFields = new RSFields
-            {
-                Ssilka = "",
-                Guid = "",
-                Disciplina = "",
-                Kategoria = "",
-                Podkaterogia = "",
-                ImiaFaila = "",
-                Proizvoditel = "",
-                Marka = "",
-                Vlozhennie = "",
-                DataObnovki = "",
-                Versia = "",
-                Avtor = "",
-                VersiaRevita = ""
-            };
             FamilyManager familyManager = doc.FamilyManager;
             var familyType = familyManager.CurrentType;
             try
             {
                 var p = familyManager.get_Parameter("КПСП_Путь к семейству");
-                rsFields.Ssilka = familyType.AsString(p);
+                Ssilka = familyType.AsString(p);
                 p = familyManager.get_Parameter("КПСП_GUID семейства");
-                rsFields.Guid = familyType.AsString(p);
+                Guid = familyType.AsString(p);
                 p = familyManager.get_Parameter("КПСП_Дисциплина");
-                rsFields.Disciplina = familyType.AsString(p);
+                Disciplina = familyType.AsString(p);
                 p = familyManager.get_Parameter("КПСП_Категория");
-                rsFields.Kategoria = familyType.AsString(p);
+                Kategoria = familyType.AsString(p);
                 p = familyManager.get_Parameter("КПСП_Подкатегория");
-                rsFields.Podkaterogia = familyType.AsString(p);
+                Podkaterogia = familyType.AsString(p);
                 p = familyManager.get_Parameter("МСК_Завод-изготовитель");
-                rsFields.Proizvoditel = familyType.AsString(p);
+                Proizvoditel = familyType.AsString(p);
                 p = familyManager.get_Parameter("МСК_Обозначение");
-                rsFields.Marka = familyType.AsString(p);
+                Marka = familyType.AsString(p);
                 p = familyManager.get_Parameter("КПСП_Вложенные семейства");
-                rsFields.Vlozhennie = familyType.AsString(p);
+                Vlozhennie = familyType.AsString(p);
                 p = familyManager.get_Parameter("КПСП_Дата редактирования");
-                rsFields.DataObnovki = familyType.AsString(p);
+                DataObnovki = familyType.AsString(p);
                 p = familyManager.get_Parameter("МСК_Версия семейства");
-                rsFields.Versia = familyType.AsString(p);
-                rsFields.ImiaFaila = doc.Title.ToString() + ".rfa";
+                Versia = familyType.AsString(p);
+                ImiaFaila = doc.Title.ToString() + ".rfa";
                 p = familyManager.get_Parameter("МСК_Версия Revit");
-                rsFields.VersiaRevita = familyType.AsString(p);
+                VersiaRevita = familyType.AsString(p);
                 p = familyManager.get_Parameter("КПСП_Автор");
-                rsFields.Avtor = familyType.AsString(p);
+                Avtor = familyType.AsString(p);
             }
             catch
             {
 
             }
-
-            return rsFields;
         }
 
     }

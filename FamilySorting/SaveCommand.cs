@@ -52,9 +52,29 @@
 
                 var pathToParameter = familyManager.get_Parameter("КПСП_Путь к семейству");
                 string pathTo = familyType.AsString(pathToParameter);
+                //pathTo += @"\" + doc.Title; // + ".rfa";
 
+                SaveAsOptions sao = new SaveAsOptions();
+                sao.OverwriteExistingFile = true;
 
-                //doc.SaveAs(@pathTo);
+                //UISaveAsOptions saveAsOptions = new UISaveAsOptions();
+                //saveAsOptions.ShowOverwriteWarning = false;
+
+                //TaskDialog.Show("Сохранить", pathTo);
+
+                SaveForm saveForm = new SaveForm();
+                saveForm.Doc = doc;
+                saveForm.textFamilyName.Text = doc.Title;
+                saveForm.labelPath.Text = pathTo;
+                saveForm.textComment.Text = " ";
+                saveForm.Show();
+
+                //FileSaveDialog fileSaveDialog = new FileSaveDialog("Revit Families (*.rfa)|*.rfa"); // "Revit Projects (*.rvt)|*.rvt|Revit Families (*.rfa)|*.rfa"
+                //fileSaveDialog.InitialFileName = doc.Title;
+                //fileSaveDialog.Show();
+
+                //doc.Save();
+                //doc.SaveAs(@"C:\Users\Sidorin_O\Documents\TEST\testsavefamily.rfa", sao);
             }
             else
             {

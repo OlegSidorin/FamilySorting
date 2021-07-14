@@ -13,6 +13,10 @@
     {
         public static string TabName { get; set; } = "КПСП";
         public static string PanelSortName { get; set; } = "Семейства";
+        public static string Comment { get; set; } = " ";
+        public static string FolderReestrPath { get; set; } = "K:\\Подразделения\\ТИМ\\Обмен\\Проект автоматизация семейств\\Реестр семейств";
+        public static string ReestrPath { get; set; } = "K:\\Подразделения\\ТИМ\\Обмен\\Проект автоматизация семейств\\Реестр семейств\\Реестр_семейств.xlsx";
+        public static string FOPPath { get; set; } = Assembly.GetExecutingAssembly().Location + "\\res\\ФОП.txt";
         public Result OnStartup(UIControlledApplication application)
         {
             List<RibbonPanel> panelList = new List<RibbonPanel>();
@@ -61,6 +65,14 @@
             sBtn.AddPushButton(AddParamsBtnData);
             sBtn.AddPushButton(ClearBtnData);
 
+            var SaveBtnData = new PushButtonData("SaveBtnData", "Сохранить\nв библиотеку", path, "FamilySorting.SaveCommand")
+            {
+                ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\save-32.png", UriKind.Absolute)),
+                ToolTip = "Сохраняет семейство в библиотеку"
+            };
+            var SaveBtn = panelSort.AddItem(SaveBtnData) as PushButton;
+            SaveBtn.LargeImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\save-32.png", UriKind.Absolute));
+
             var ExlsBtnData = new PushButtonData("ExlsBtnData", "Записать\nв журнал", path, "FamilySorting.WriteToExlsCommand")
             {
                 ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\exls-32.png", UriKind.Absolute)),
@@ -68,14 +80,6 @@
             };
             var ExlsBtn = panelSort.AddItem(ExlsBtnData) as PushButton;
             ExlsBtn.LargeImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\exls-32.png", UriKind.Absolute));
-
-            var SaveBtnData = new PushButtonData("SaveBtnData", "Сохранить\nна диск", path, "FamilySorting.SaveCommand")
-            {
-                ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\save-32.png", UriKind.Absolute)),
-                ToolTip = "Сохраняет семейство в библиотеку"
-            };
-            var SaveBtn = panelSort.AddItem(SaveBtnData) as PushButton;
-            SaveBtn.LargeImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\save-32.png", UriKind.Absolute));
 
             return Result.Succeeded;
         }
