@@ -54,8 +54,7 @@
                 string pathTo = familyType.AsString(pathToParameter);
                 //pathTo += @"\" + doc.Title; // + ".rfa";
 
-                SaveAsOptions sao = new SaveAsOptions();
-                sao.OverwriteExistingFile = true;
+
 
                 //UISaveAsOptions saveAsOptions = new UISaveAsOptions();
                 //saveAsOptions.ShowOverwriteWarning = false;
@@ -68,6 +67,8 @@
                 saveForm.labelPath.Text = pathTo;
                 saveForm.textComment.Text = " ";
                 saveForm.Show();
+
+                
 
                 //FileSaveDialog fileSaveDialog = new FileSaveDialog("Revit Families (*.rfa)|*.rfa"); // "Revit Projects (*.rvt)|*.rvt|Revit Families (*.rfa)|*.rfa"
                 //fileSaveDialog.InitialFileName = doc.Title;

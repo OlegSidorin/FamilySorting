@@ -97,7 +97,7 @@
       <DependentUpon>SaveForm.cs</DependentUpon>
     </Compile>
     <Compile Include="TableEntry.cs" />
-    <Compile Include="WriteToExls.cs" />
+    <Compile Include="Methods.cs" />
     <Compile Include="WriteToExlsCommand.cs" />
     <Compile Include="BindingCommand.cs" />
   </ItemGroup>

@@ -90,8 +90,9 @@ namespace FamilySorting
             // 
             this.labelPath.AutoSize = true;
             this.labelPath.Location = new System.Drawing.Point(9, 140);
+            this.labelPath.MinimumSize = new System.Drawing.Size(755, 0);
             this.labelPath.Name = "labelPath";
-            this.labelPath.Size = new System.Drawing.Size(94, 17);
+            this.labelPath.Size = new System.Drawing.Size(755, 17);
             this.labelPath.TabIndex = 5;
             this.labelPath.Text = "Указать путь";
             // 

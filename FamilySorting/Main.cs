@@ -73,13 +73,13 @@
             var SaveBtn = panelSort.AddItem(SaveBtnData) as PushButton;
             SaveBtn.LargeImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\save-32.png", UriKind.Absolute));
 
-            var ExlsBtnData = new PushButtonData("ExlsBtnData", "Записать\nв журнал", path, "FamilySorting.WriteToExlsCommand")
-            {
-                ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\exls-32.png", UriKind.Absolute)),
-                ToolTip = "Записывает параметры в журнал"
-            };
-            var ExlsBtn = panelSort.AddItem(ExlsBtnData) as PushButton;
-            ExlsBtn.LargeImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\exls-32.png", UriKind.Absolute));
+            //var ExlsBtnData = new PushButtonData("ExlsBtnData", "Записать\nв журнал", path, "FamilySorting.WriteToExlsCommand")
+            //{
+            //    ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\exls-32.png", UriKind.Absolute)),
+            //    ToolTip = "Записывает параметры в журнал"
+            //};
+            //var ExlsBtn = panelSort.AddItem(ExlsBtnData) as PushButton;
+            //ExlsBtn.LargeImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\exls-32.png", UriKind.Absolute));
 
             return Result.Succeeded;
         }
