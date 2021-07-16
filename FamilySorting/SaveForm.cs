@@ -17,13 +17,27 @@ namespace FamilySorting
     public partial class SaveForm : System.Windows.Forms.Form
     {
         public Document Doc { get; set; }
-        public SaveButtonExternalEvent saveButtonExternalEvent;
-        public ExternalEvent externalEvent;
+
+        public static string Comment { get; set; } = "";
+
+        public SaveButtonExternalEventNewGuid saveButtonExternalEventNewGuid;
+        public ExternalEvent externalEventNewGuid;
+
+        public SaveButtonExternalEventSaveExls saveButtonExternalEventSaveExls;
+        public ExternalEvent externalEventSaveExls;
+
+        public SaveButtonExternalEventNewVer saveButtonExternalEventNewVer;
+        public ExternalEvent externalEventNewVer;
+
         public SaveForm()
         {
             InitializeComponent();
-            saveButtonExternalEvent = new SaveButtonExternalEvent();
-            externalEvent = ExternalEvent.Create(saveButtonExternalEvent);
+            saveButtonExternalEventNewGuid = new SaveButtonExternalEventNewGuid();
+            externalEventNewGuid = ExternalEvent.Create(saveButtonExternalEventNewGuid);
+            saveButtonExternalEventSaveExls = new SaveButtonExternalEventSaveExls();
+            externalEventSaveExls = ExternalEvent.Create(saveButtonExternalEventSaveExls);
+            saveButtonExternalEventNewVer = new SaveButtonExternalEventNewVer();
+            externalEventNewVer = ExternalEvent.Create(saveButtonExternalEventNewVer);
         }
 
         private void saveButton_Click(object sender, EventArgs e)
@@ -64,12 +78,19 @@ namespace FamilySorting
                 }
             }
 
-            TaskDialog.Show("Warn", Doc.Title + " : " + guidProblem.ToString());
+            //TaskDialog.Show("Warn", Doc.Title + " : " + guidProblem.ToString());
 
             if (guidProblem)
-                externalEvent.Raise();
+            {
+                externalEventNewGuid.Raise();
+            }
+            else
+            {
+                externalEventNewVer.Raise();
+            }
+                
 
-            TaskDialog.Show("Warn", Doc.Title + " : " + "точка 2 после установки нового guid");
+            //TaskDialog.Show("Warn", Doc.Title + " : " + "точка 2 после установки нового guid");
 
             SaveAsOptions sao = new SaveAsOptions();
             sao.OverwriteExistingFile = true;
@@ -80,9 +101,8 @@ namespace FamilySorting
 
             Doc.SaveAs(labelPath.Text.ToString() + @"\" + textFamilyName.Text.ToString() + ".rfa", sao);
 
-            var filePath = Main.ReestrPath;
-            var f = new FamilyParameters();
-            f.GetParameters(Doc);
+            #region 1
+            /*
 
             IList<FamilyInstance> vlozhennieSemeistva = new FilteredElementCollector(Doc).OfClass(typeof(FamilyInstance)).WhereElementIsNotElementType().Cast<FamilyInstance>().ToList();
             List<string> guids = new List<string>();
@@ -106,8 +126,13 @@ namespace FamilySorting
                 guidsDistinct = guids.Distinct().ToList();
             }
 
+            var filePath = Main.ReestrPath;
+            var f = new FamilyParameters();
+            f.GetParameters(Doc);
+
             using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath)))
             {
+                
                 foreach (var ws in excelPackage.Workbook.Worksheets)
                 {
                     if (ws.ToString() == "Реестр семейств")
@@ -120,7 +145,7 @@ namespace FamilySorting
                                 rowIfExsist = row;
                             row += 1;
                         }
-
+                        
                         ws.Cells[row, 1].Value = f.Guid;
                         ws.Cells[row, 2].Value = f.Disciplina;
                         ws.Cells[row, 3].Value = f.Kategoria;
@@ -208,18 +233,24 @@ namespace FamilySorting
 
             }
 
+            */
+            #endregion
 
+            SaveForm.Comment = textComment.Text.ToString();
+            
+            externalEventSaveExls.Raise();
 
             Close(); 
         }
 
-        public class SaveButtonExternalEvent : IExternalEventHandler
+        public class SaveButtonExternalEventNewGuid : IExternalEventHandler
         {
             public void Execute(UIApplication app)
             {
                 UIDocument uidoc = app.ActiveUIDocument;
                 Document doc = uidoc.Document;
-                Methods.NewGuid(doc);
+                Methods methods = new Methods();
+                methods.NewGuid(doc);
                 //TaskDialog.Show("Warning", "Iz External Eventa");
                 return;
             }
@@ -227,6 +258,181 @@ namespace FamilySorting
             public string GetName()
             {
                 return "External Event On Save Button";
+            }
+        }
+        public class SaveButtonExternalEventNewVer : IExternalEventHandler
+        {
+            public void Execute(UIApplication app)
+            {
+                UIDocument uidoc = app.ActiveUIDocument;
+                Document doc = uidoc.Document;
+                Methods methods = new Methods();
+                methods.NewVer(doc);
+                //TaskDialog.Show("Warning", "Iz External Eventa");
+                return;
+            }
+
+            public string GetName()
+            {
+                return "External Event On Save Button";
+            }
+        }
+        public class SaveButtonExternalEventSaveExls : IExternalEventHandler
+        {
+            public void Execute(UIApplication app)
+            {
+                UIDocument uidoc = app.ActiveUIDocument;
+                Document doc = uidoc.Document;
+                Methods methods = new Methods();
+
+                IList<FamilyInstance> vlozhennieSemeistva = new FilteredElementCollector(doc).OfClass(typeof(FamilyInstance)).WhereElementIsNotElementType().Cast<FamilyInstance>().ToList();
+                List<string> guids = new List<string>();
+                List<string> guidsDistinct = new List<string>();
+                int guidsVsego = 0;
+
+                foreach (FamilyInstance fi in vlozhennieSemeistva)
+                {
+                    FamilySymbol fType = fi.Symbol;
+                    Family fam = fType.Family;
+                    try
+                    {
+                        string str = fType.get_Parameter(new Guid("11b18c00-5d82-4226-8b5f-74526a7ec4f8")).AsString();
+                        guids.Add(str);
+                        guidsVsego += 1;
+                    }
+                    catch
+                    {
+                        // do nothing
+                    }
+                    guidsDistinct = guids.Distinct().ToList();
+                }
+
+                var filePath = Main.ReestrPath;
+                var f = new FamilyParameters();
+                f.GetParameters(doc);
+
+                using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(filePath)))
+                {
+
+                    foreach (var ws in excelPackage.Workbook.Worksheets)
+                    {
+                        if (ws.ToString() == "Реестр семейств")
+                        {
+                            int row = 2;
+                            int rowIfExsist = 0;
+                            while ((ws.Cells[row, 1].Value != null) & (ws.Cells[row, 2].Value != null) & (ws.Cells[row, 6].Value != null))
+                            {
+                                if (ws.Cells[row, 1].Value.ToString() == f.Guid)
+                                    rowIfExsist = row;
+                                row += 1;
+                            }
+                            if (rowIfExsist != 0)
+                            {
+                                if (ws.Cells[rowIfExsist, 2].Value.ToString() == f.Disciplina &&
+                                    ws.Cells[rowIfExsist, 3].Value.ToString() == f.Kategoria &&
+                                    ws.Cells[rowIfExsist, 4].Value.ToString() == f.Podkaterogia &&
+                                    ws.Cells[rowIfExsist, 5].Value.ToString() == f.ImiaFaila
+                                    )
+                                {
+                                    row = rowIfExsist;
+                                    //TaskDialog.Show("Warn", "Sovpalo");
+                                }
+
+                            }
+
+                            ws.Cells[row, 1].Value = f.Guid;
+                            ws.Cells[row, 2].Value = f.Disciplina;
+                            ws.Cells[row, 3].Value = f.Kategoria;
+                            ws.Cells[row, 4].Value = f.Podkaterogia;
+                            ws.Cells[row, 5].Value = f.ImiaFaila;
+                            ws.Cells[row, 6].Value = f.Proizvoditel;
+                            ws.Cells[row, 7].Value = f.Marka;
+                            ws.Cells[row, 8].Value = f.Vlozhennie;
+                            ws.Cells[row, 9].Value = f.DataObnovki;
+                            ws.Cells[row, 10].Value = f.Versia;
+                            ws.Cells[row, 11].Value = f.Avtor;
+                            ws.Cells[row, 12].Value = f.VersiaRevita;
+                        }
+                    }
+
+                    foreach (var ws in excelPackage.Workbook.Worksheets)
+                    {
+                        //add data
+                        if (ws.ToString() == "История изменений")
+                        {
+                            int row = 2;
+                            while ((ws.Cells[row, 1].Value != null) & (ws.Cells[row, 2].Value != null))
+                            {
+                                row += 1;
+                            }
+                            ws.Cells[row, 1].Value = f.Guid;
+                            ws.Cells[row, 2].Value = f.ImiaFaila;
+                            ws.Cells[row, 3].Value = f.DataObnovki;
+                            ws.Cells[row, 4].Value = f.Avtor;
+                            ws.Cells[row, 5].Value = SaveForm.Comment;
+                        }
+                    }
+
+                    foreach (var ws in excelPackage.Workbook.Worksheets)
+                    {
+                        //add data
+                        if (ws.ToString() == "Связь вложенных семейств")
+                        {
+                            int row = 2;
+                            List<int> rows = new List<int>();
+                            while ((ws.Cells[row, 1].Value != null) & (ws.Cells[row, 2].Value != null))
+                            {
+                                foreach (var guid in guidsDistinct)
+                                {
+                                    if (ws.Cells[row, 2].Value.ToString() == guid)
+                                    {
+                                        if (ws.Cells[row, 1].Value.ToString() == f.Guid)
+                                        {
+                                            rows.Add(row);
+                                        }
+                                    }
+                                }
+
+                                row += 1;
+                            }
+
+                            for (int i = 0; i < guidsDistinct.Count; i++)
+                            {
+                                ws.Cells[row + i, 1].Value = f.Guid;
+                                ws.Cells[row + i, 2].Value = guidsDistinct[i];
+                                ws.Cells[row + i, 3].Value = string.Join(", ", rows);
+                            }
+
+                            if (rows.Count != 0)
+                            {
+                                int shift = 0;
+                                foreach (var r in rows)
+                                {
+                                    ws.DeleteRow(r - shift, 1, true);
+                                    shift += 1;
+                                }
+                            }
+
+                        }
+                    }
+                    //save the changes
+                    try
+                    {
+                        excelPackage.Save();
+                    }
+                    catch
+                    {
+                        TaskDialog.Show("Warning", "Невозможно произвести запись в файл..");
+                    }
+
+                }
+
+                return;
+            }
+
+            public string GetName()
+            {
+                return "External Event On Save Exls";
             }
         }
     }

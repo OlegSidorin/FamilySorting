@@ -169,7 +169,7 @@
                             familyManager.Set(p, famGuid.ToString());
                             log += "\nПрисвоен новый Guid семейству: " + familyType.AsString(p);
                         }
-
+                        /*
                         p = familyManager.get_Parameter("МСК_Версия семейства");
                         string vs = familyType.AsString(p);
                         int vs_int = 1;
@@ -185,7 +185,7 @@
                             familyManager.Set(p, "1");
                             log += "\nВерсия семейства: " + familyType.AsString(p);
                         }
-                        
+                        */
 
                         p = familyManager.get_Parameter("КПСП_Дата редактирования");
 

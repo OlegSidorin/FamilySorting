@@ -15,7 +15,7 @@
         public static string PanelSortName { get; set; } = "Семейства";
         public static string Comment { get; set; } = " ";
         public static string FolderReestrPath { get; set; } = "K:\\Подразделения\\ТИМ\\Обмен\\Проект автоматизация семейств\\Реестр семейств";
-        public static string ReestrPath { get; set; } = "K:\\Подразделения\\ТИМ\\Обмен\\Проект автоматизация семейств\\Реестр семейств\\Реестр_семейств.xlsx";
+        public static string ReestrPath { get; set; } = "K:\\Стандарт\\ТИМ Семейства\\0_Реестр семейств\\Админ\\Реестр_семейств.xlsx";
         public static string FOPPath { get; set; } = Assembly.GetExecutingAssembly().Location + "\\res\\ФОП.txt";
         public Result OnStartup(UIControlledApplication application)
         {

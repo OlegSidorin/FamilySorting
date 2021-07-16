@@ -19,7 +19,7 @@
     class Methods
     {
 
-        public static void NewGuid(Document doc)
+        public void NewGuid(Document doc)
         {
 
             string fopFilePath = Main.FOPPath;
@@ -46,7 +46,8 @@
                         t.Start();
 
                         var p = familyManager.get_Parameter("КПСП_GUID семейства");
-                        familyManager.Set(p, Guid.NewGuid().ToString());
+                        var guid = Guid.NewGuid().ToString();
+                        familyManager.Set(p, guid);
 
                         p = familyManager.get_Parameter("МСК_Версия семейства");
                         familyManager.Set(p, "1");
@@ -72,6 +73,109 @@
                 TaskDialog.Show("Warning main", "Это не семейство, команда работает только в семействе");
             }
 
+        }
+        public void NewVer(Document doc)
+        {
+
+            string fopFilePath = Main.FOPPath;
+
+            if (doc.IsFamilyDocument)
+            {
+                FamilyManager familyManager = doc.FamilyManager;
+                FamilyType familyType;
+                familyType = familyManager.CurrentType;
+                if (familyType == null)
+                {
+                    using (Transaction t = new Transaction(doc, "change"))
+                    {
+                        t.Start();
+                        familyType = familyManager.NewType("Тип 1");
+                        familyManager.CurrentType = familyType;
+                        t.Commit();
+                    }
+                }
+                try
+                {
+                    using (Transaction t = new Transaction(doc, "Apply"))
+                    {
+                        t.Start();
+
+                        var p = familyManager.get_Parameter("МСК_Версия семейства");
+                        string vs = familyType.AsString(p);
+                        int vs_int = 1;
+                        if (vs != "")
+                        {
+                            int.TryParse(vs, out vs_int);
+                            vs_int += 1;
+                            familyManager.Set(p, vs_int.ToString());
+                        }
+                        if (vs == "")
+                        {
+                            familyManager.Set(p, "1");
+                        }
+
+                        p = familyManager.get_Parameter("КПСП_Дата редактирования");
+                        DateTime today = DateTime.Now;
+                        int.TryParse(today.Day.ToString(), out int dayInt);
+                        int.TryParse(today.Month.ToString(), out int monthInt);
+                        string sDate = String.Format("{0:D2}-{1:D2}-{2}", dayInt, monthInt, today.Year.ToString());
+                        familyManager.Set(p, sDate);
+
+                        t.Commit();
+                    }
+                }
+                catch (Exception e)
+                {
+                    TaskDialog.Show("!Warning!", e.ToString());
+                }
+
+            }
+            else
+            {
+                TaskDialog.Show("Warning main", "Это не семейство, команда работает только в семействе");
+            }
+
+        }
+        public string GetParameter(Document doc, string str)
+        {
+            string result = "";
+
+            if (doc.IsFamilyDocument)
+            {
+                FamilyManager familyManager = doc.FamilyManager;
+                FamilyType familyType;
+                familyType = familyManager.CurrentType;
+                if (familyType == null)
+                {
+                    using (Transaction t = new Transaction(doc, "change"))
+                    {
+                        t.Start();
+                        familyType = familyManager.NewType("Тип 1");
+                        familyManager.CurrentType = familyType;
+                        t.Commit();
+                    }
+                }
+                try
+                {
+                    using (Transaction t = new Transaction(doc, "GET"))
+                    {
+                        t.Start();
+                        var p = familyManager.get_Parameter(str);
+                        result = familyType.AsString(p);
+                        t.Commit();
+                    }
+                }
+                catch (Exception e)
+                {
+                    TaskDialog.Show("!Warning!", e.ToString());
+                }
+
+            }
+            else
+            {
+                TaskDialog.Show("Warning main", "Это не семейство, команда работает только в семействе");
+            }
+            return result;
         }
 
 
@@ -130,7 +234,7 @@
             }
             catch
             {
-
+                TaskDialog.Show("Warning from FamilyParameters.GetParameters", "No parameters");
             }
         }
 
