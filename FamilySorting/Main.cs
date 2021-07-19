@@ -16,7 +16,8 @@
         public static string Comment { get; set; } = " ";
         public static string FolderReestrPath { get; set; } = "K:\\Стандарт\\ТИМ Семейства\\0_Реестр семейств\\Админ";
         public static string ReestrPath { get; set; } = "K:\\Стандарт\\ТИМ Семейства\\0_Реестр семейств\\Админ\\Реестр_семейств.xlsx";
-        public static string FOPPath { get; set; } = Assembly.GetExecutingAssembly().Location + "\\res\\ФОП.txt";
+        public static string FOPPath { get; set; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\res\\ФОП.txt";
+        public static string ClassificatorPath { get; set; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\res\\Классификатор семейств.txt";
         public Result OnStartup(UIControlledApplication application)
         {
             List<RibbonPanel> panelList = new List<RibbonPanel>();

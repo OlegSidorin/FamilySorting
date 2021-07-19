@@ -22,15 +22,8 @@
             UIDocument uiDoc = commandData.Application.ActiveUIDocument;
             Document doc = uiDoc.Document;
             string path = Assembly.GetExecutingAssembly().Location;
-            string assemblyTablePath = Path.GetDirectoryName(path) + "\\res\\Классификатор семейств.txt";
-            string str = "";
 
-            using (Transaction t = new Transaction(doc, "save"))
-            {
-                t.Start();
-                
-                t.Commit();
-            }
+
 
             if (doc.IsFamilyDocument)
             {
@@ -47,27 +40,41 @@
                         t.Commit();
                     }
                 }
-                var pKey = familyManager.get_Parameter("Код по классификатору");
-                string pKeyValue = familyType.AsString(pKey);
 
-                var pathToParameter = familyManager.get_Parameter("КПСП_Путь к семейству");
-                string pathTo = familyType.AsString(pathToParameter);
-                //pathTo += @"\" + doc.Title; // + ".rfa";
+                bool isAnnotation = false;
+                try
+                {
 
+                    var fm = new FilteredElementCollector(doc).OfClass(typeof(Family)).Cast<Family>().ToList().FirstOrDefault();
+                    if (fm.FamilyCategory.CategoryType.ToString() == "Annotation")
+                    {
+                        isAnnotation = true;
+                    }
+                    else
+                    {
+                        isAnnotation = false;
+                    }
 
+                }
+                catch (Exception ex)
+                {
+                    TaskDialog.Show("Warning2", ex.ToString());
+                }
 
-                //UISaveAsOptions saveAsOptions = new UISaveAsOptions();
-                //saveAsOptions.ShowOverwriteWarning = false;
-
-                //TaskDialog.Show("Сохранить", pathTo);
-
-                SaveForm saveForm = new SaveForm();
-                saveForm.Doc = doc;
-                saveForm.textFamilyName.Text = doc.Title;
-                saveForm.labelPath.Text = pathTo;
-                saveForm.textComment.Text = " ";
-                saveForm.Show();
-
+                if (!isAnnotation)
+                {
+                    var pKey = familyManager.get_Parameter("Код по классификатору");
+                    string pKeyValue = familyType.AsString(pKey);
+                    var pathToParameter = familyManager.get_Parameter("КПСП_Путь к семейству");
+                    string pathTo = familyType.AsString(pathToParameter);
+                    SaveForm saveForm = new SaveForm();
+                    saveForm.Doc = doc;
+                    saveForm.textFamilyName.Text = doc.Title;
+                    saveForm.labelPath.Text = pathTo;
+                    saveForm.textComment.Text = " ";
+                    saveForm.Show();
+                }
+                
                 
 
                 //FileSaveDialog fileSaveDialog = new FileSaveDialog("Revit Families (*.rfa)|*.rfa"); // "Revit Projects (*.rvt)|*.rvt|Revit Families (*.rfa)|*.rfa"

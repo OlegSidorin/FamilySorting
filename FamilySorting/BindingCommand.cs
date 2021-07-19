@@ -21,13 +21,12 @@
         {
             UIDocument uiDoc = commandData.Application.ActiveUIDocument;
             Document doc = uiDoc.Document;
-            string path = Assembly.GetExecutingAssembly().Location;
             //string originalFile = app.SharedParametersFilename;
-            string fopFilePath = Path.GetDirectoryName(path) + "\\res\\ФОП.txt";
+            string fopFilePath = Main.FOPPath;
+            string assemblyTablePath = Main.ClassificatorPath;
             string log = "";
             bool isExist = false;
 
-            string assemblyTablePath = Path.GetDirectoryName(path) + "\\res\\Классификатор семейств.txt";
             var resourceReference = ExternalResourceReference.CreateLocalResource(doc, ExternalResourceTypes.BuiltInExternalResourceTypes.AssemblyCodeTable,
                 ModelPathUtils.ConvertUserVisiblePathToModelPath(assemblyTablePath), PathType.Absolute) as ExternalResourceReference;
             using (Transaction t = new Transaction(doc, "erer"))
@@ -38,17 +37,19 @@
             }
 
 
-
             string[] paramtersArray =
             {
                 "КПСП_GUID семейства", "КПСП_Дисциплина", "КПСП_Категория", "КПСП_Подкатегория", "МСК_Версия Revit", "МСК_Версия семейства", "КПСП_Статус",  
-                "КПСП_Библиотека семейств", "КПСП_Инструкция", "КПСП_Путь к семейству",  "КПСП_Дата редактирования", "КПСП_Автор", "КПСП_Вложенные семейства"
+                "КПСП_Библиотека семейств", "КПСП_Инструкция", "КПСП_Путь к семейству", "КПСП_Дата редактирования", "КПСП_Автор", "КПСП_Вложенные семейства"
             };
             string[] paramtersMSKTypeArray =
             {
                 "МСК_Марка", "МСК_Наименование", "МСК_Завод-изготовитель", "МСК_Материал", "МСК_Описание", "МСК_Масса", "МСК_Масса_Текст",
                 "МСК_Размер_Ширина", "МСК_Размер_Высота", "МСК_Размер_Толщина", "МСК_Размер_Глубина", "МСК_ЕдИзм", "МСК_Примечание", "МСК_Обозначение",
-                //"МСК_Позиция на схеме", "avp_Позиция", "avp_Наименование и техническая характеристика", "avp_Завод- изготовитель", "avp_Тип, марка, обозначение документа,"
+            };
+            string[] paramtersMSKTypeAnnotationArray =
+            {
+                "МСК_Марка", "МСК_Наименование", "МСК_Описание", "МСК_ЕдИзм", "МСК_Примечание", "МСК_Обозначение"
             };
             string[] paramtersMSKInstArray =
             {
@@ -61,6 +62,27 @@
                 FamilyManager familyManager = doc.FamilyManager;
                 FamilyType familyType;
                 familyType = familyManager.CurrentType;
+                #region check is family type is Annotation
+                bool isAnnotation = false;
+                try
+                {
+
+                    var annotationFamily = new FilteredElementCollector(doc).OfClass(typeof(Family)).Cast<Family>().ToList().FirstOrDefault();
+                    if (annotationFamily.FamilyCategory.CategoryType.ToString() == "Annotation")
+                    {
+                        isAnnotation = true;
+                    }
+                    else
+                    {
+                        isAnnotation = false;
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    TaskDialog.Show("Warning2", ex.ToString());
+                }
+                #endregion
                 if (familyType == null)
                 {
                     using (Transaction t = new Transaction(doc, "change"))
@@ -75,22 +97,20 @@
                 try
                 {
                     commandData.Application.Application.SharedParametersFilename = fopFilePath;
-                    using (Transaction t = new Transaction(doc,"Add paramter"))
+                    using (Transaction t = new Transaction(doc,"Add paramters"))
                     {
                         t.Start();
                         DefinitionFile sharedParametersFile = commandData.Application.Application.OpenSharedParameterFile();
                         DefinitionGroup sharedParametersGroup = sharedParametersFile.Groups.get_Item("14_Управление семействами");
                         Definition sharedParameterDefinition;
                         ExternalDefinition externalDefinition;
-
                         FamilyParameterSet parametersList = familyManager.Parameters;
-
                         isExist = false;
                         foreach (var st in paramtersArray)
                         {
                             foreach (FamilyParameter fp in parametersList)
                             {
-                                if (st == fp.Definition.Name)                              
+                                if (st == fp.Definition.Name)
                                     isExist = true;
                             }
                             if (!isExist)
@@ -102,48 +122,92 @@
                             }
                             isExist = false;
                         }
-                        isExist = false;
-                        foreach (var st in paramtersMSKTypeArray)
+                        if (!isAnnotation)
                         {
-                            foreach (FamilyParameter fp in parametersList)
+                            isExist = false;
+                            foreach (var st in paramtersMSKTypeArray)
                             {
-                                if (st == fp.Definition.Name)
-                                    isExist = true;
-                            }
-                            if (!isExist)
-                            {
-                                sharedParameterDefinition = sharedParametersGroup.Definitions.get_Item(st);
-                                externalDefinition = sharedParameterDefinition as ExternalDefinition;
-                                if (sharedParameterDefinition.Name == "МСК_Материал")
-                                    familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_MATERIALS, false);
-                                else if (sharedParameterDefinition.Name.Contains("МСК_Размер_"))
-                                    familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_GEOMETRY, false);
-                                else
-                                    familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_TEXT, false);
-                                log += "\nДобавлен параметр <" + st + ">";
+                                foreach (FamilyParameter fp in parametersList)
+                                {
+                                    if (st == fp.Definition.Name)
+                                        isExist = true;
+                                }
+                                if (!isExist)
+                                {
+                                    sharedParameterDefinition = sharedParametersGroup.Definitions.get_Item(st);
+                                    externalDefinition = sharedParameterDefinition as ExternalDefinition;
+                                    if (sharedParameterDefinition.Name == "МСК_Материал")
+                                        familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_MATERIALS, false);
+                                    else if (sharedParameterDefinition.Name.Contains("МСК_Размер_"))
+                                        familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_GEOMETRY, false);
+                                    else
+                                        familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_TEXT, false);
+                                    log += "\nДобавлен параметр <" + st + ">";
+                                }
+                                isExist = false;
                             }
                             isExist = false;
+                            foreach (var st in paramtersMSKInstArray)
+                            {
+                                foreach (FamilyParameter fp in parametersList)
+                                {
+                                    if (st == fp.Definition.Name)
+                                        isExist = true;
+                                }
+                                if (!isExist)
+                                {
+                                    sharedParameterDefinition = sharedParametersGroup.Definitions.get_Item(st);
+                                    externalDefinition = sharedParameterDefinition as ExternalDefinition;
+                                    familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_TEXT, true);
+                                    log += "\nДобавлен параметр <" + st + ">";
+                                }
+                                isExist = false;
+                            }
                         }
-                        isExist = false;
-                        foreach (var st in paramtersMSKInstArray)
+                        if (isAnnotation)
                         {
-                            foreach (FamilyParameter fp in parametersList)
+                            isExist = false;
+                            foreach (var st in paramtersMSKTypeAnnotationArray)
                             {
-                                if (st == fp.Definition.Name)
-                                    isExist = true;
-                            }
-                            if (!isExist)
-                            {
-                                sharedParameterDefinition = sharedParametersGroup.Definitions.get_Item(st);
-                                externalDefinition = sharedParameterDefinition as ExternalDefinition;
-                                familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_TEXT, true);
-                                log += "\nДобавлен параметр <" + st + ">";
+                                foreach (FamilyParameter fp in parametersList)
+                                {
+                                    if (st == fp.Definition.Name)
+                                        isExist = true;
+                                }
+                                if (!isExist)
+                                {
+                                    sharedParameterDefinition = sharedParametersGroup.Definitions.get_Item(st);
+                                    externalDefinition = sharedParameterDefinition as ExternalDefinition;
+                                    if (sharedParameterDefinition.Name == "МСК_Материал")
+                                        familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_MATERIALS, false);
+                                    else if (sharedParameterDefinition.Name.Contains("МСК_Размер_"))
+                                        familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_GEOMETRY, false);
+                                    else
+                                        familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_TEXT, false);
+                                    log += "\nДобавлен параметр <" + st + ">";
+                                }
+                                isExist = false;
                             }
                             isExist = false;
+                            foreach (var st in paramtersMSKInstArray)
+                            {
+                                foreach (FamilyParameter fp in parametersList)
+                                {
+                                    if (st == fp.Definition.Name)
+                                        isExist = true;
+                                }
+                                if (!isExist)
+                                {
+                                    sharedParameterDefinition = sharedParametersGroup.Definitions.get_Item(st);
+                                    externalDefinition = sharedParameterDefinition as ExternalDefinition;
+                                    familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_TEXT, true);
+                                    log += "\nДобавлен параметр <" + st + ">";
+                                }
+                                isExist = false;
+                            }
                         }
                         t.Commit();
                     }
-
                 }
                 catch (Exception e)
                 {
@@ -151,7 +215,7 @@
                 }
                 try
                 {
-                    using (Transaction t = new Transaction(doc, "Apply"))
+                    using (Transaction t = new Transaction(doc, "Set parameters"))
                     {
                         t.Start();
                         log += "\n---";
@@ -169,6 +233,7 @@
                             familyManager.Set(p, famGuid.ToString());
                             log += "\nПрисвоен новый Guid семейству: " + familyType.AsString(p);
                         }
+
                         /*
                         p = familyManager.get_Parameter("МСК_Версия семейства");
                         string vs = familyType.AsString(p);
@@ -201,26 +266,107 @@
                         familyManager.Set(p, User);
                         log += "\nАвтор: " + familyType.AsString(p);
 
-                        var pKey = familyManager.get_Parameter("Код по классификатору");
-                        string pKeyValue = familyType.AsString(pKey);
+                        #region set parameters with Classificator Cod
+                        if (!isAnnotation)
+                        {
+                            var pKey = familyManager.get_Parameter("Код по классификатору");
+                            string pKeyValue = familyType.AsString(pKey);
 
-                        p = familyManager.get_Parameter("КПСП_Дисциплина");
-                        familyManager.Set(p, TableEntry.GetDiscipline(pKeyValue));
-                        log += "\nДисциплина: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
-                        p = familyManager.get_Parameter("КПСП_Категория");
-                        familyManager.Set(p, TableEntry.GetCategory(pKeyValue));
-                        log += "\nКатегория: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
-                        p = familyManager.get_Parameter("КПСП_Подкатегория");
-                        familyManager.Set(p, TableEntry.GetSubCategory(pKeyValue));
-                        log += "\nПодкатегория: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
+                            p = familyManager.get_Parameter("КПСП_Дисциплина");
+                            familyManager.Set(p, TableEntry.GetDiscipline(pKeyValue));
+                            log += "\nДисциплина: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
+                            p = familyManager.get_Parameter("КПСП_Категория");
+                            familyManager.Set(p, TableEntry.GetCategory(pKeyValue));
+                            log += "\nКатегория: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
+                            p = familyManager.get_Parameter("КПСП_Подкатегория");
+                            familyManager.Set(p, TableEntry.GetSubCategory(pKeyValue));
+                            log += "\nПодкатегория: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
 
-                        p = familyManager.get_Parameter("КПСП_Путь к семейству");
-                        familyManager.Set(p, TableEntry.GetPathToFamily(pKeyValue).Replace("0_Библиотека семейств", "0_Библиотека семейств " + build));
+                            p = familyManager.get_Parameter("КПСП_Путь к семейству");
+                            familyManager.Set(p, TableEntry.GetPathToFamily(pKeyValue).Replace("RXX", build));
 
-                        log += "\nПуть к семейству: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
-                        p = familyManager.get_Parameter("КПСП_Инструкция");
-                        familyManager.Set(p, TableEntry.GetPathToInstruction(pKeyValue));
-                        log += "\nИнструкция: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
+                            log += "\nПуть к семейству: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
+                            p = familyManager.get_Parameter("КПСП_Инструкция");
+                            familyManager.Set(p, TableEntry.GetPathToInstruction(pKeyValue));
+                            log += "\nИнструкция: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
+                        }
+                        #endregion
+
+                        #region set parameters if Annotation
+                        if (isAnnotation)
+                        {
+
+                            p = familyManager.get_Parameter("КПСП_Дисциплина");
+                            familyManager.Set(p, "Общие");
+
+                            p = familyManager.get_Parameter("КПСП_Категория");
+                            familyManager.Set(p, "Аннотации");
+
+                            try
+                            {
+                                var annotationFamily = new FilteredElementCollector(doc).OfClass(typeof(Family)).Cast<Family>().ToList().FirstOrDefault();
+                                if (annotationFamily.FamilyCategory.CategoryType.ToString() == "Annotation")
+                                {
+                                    if (annotationFamily.FamilyCategory.Name.Contains("Марки "))
+                                    {
+                                        p = familyManager.get_Parameter("КПСП_Подкатегория");
+                                        familyManager.Set(p, "Марки");
+                                        p = familyManager.get_Parameter("КПСП_Путь к семейству");
+                                        familyManager.Set(p, @"K:\Стандарт\ТИМ Семейства\0_Библиотека семейств RXX\1 Общие\Аннотации\Марки".Replace("RXX", build));
+                                    }
+                                    else if (annotationFamily.FamilyCategory.Name.Contains("Просмотр заголовков"))
+                                    {
+                                        p = familyManager.get_Parameter("КПСП_Подкатегория");
+                                        familyManager.Set(p, "Название вида");
+                                        p = familyManager.get_Parameter("КПСП_Путь к семейству");
+                                        familyManager.Set(p, @"K:\Стандарт\ТИМ Семейства\0_Библиотека семейств RXX\1 Общие\Аннотации\Название вида".Replace("RXX", build));
+                                    }
+                                    else if (annotationFamily.FamilyCategory.Name.Contains("Обозначения высотных отметок"))
+                                    {
+                                        p = familyManager.get_Parameter("КПСП_Подкатегория");
+                                        familyManager.Set(p, "Обозначение высотной отметки");
+                                        p = familyManager.get_Parameter("КПСП_Путь к семейству");
+                                        familyManager.Set(p, @"K:\Стандарт\ТИМ Семейства\0_Библиотека семейств RXX\1 Общие\Аннотации\Обозначение высотной отметки".Replace("RXX", build));
+                                    }
+                                    else if (annotationFamily.FamilyCategory.Name.Contains("Обозначения осей"))
+                                    {
+                                        p = familyManager.get_Parameter("КПСП_Подкатегория");
+                                        familyManager.Set(p, "Обозначение оси");
+                                        p = familyManager.get_Parameter("КПСП_Путь к семейству");
+                                        familyManager.Set(p, @"K:\Стандарт\ТИМ Семейства\0_Библиотека семейств RXX\1 Общие\Аннотации\Обозначение оси".Replace("RXX", build));
+                                    }
+                                    else
+                                    {
+                                        p = familyManager.get_Parameter("КПСП_Подкатегория");
+                                        familyManager.Set(p, "Типовые аннотации");
+                                        p = familyManager.get_Parameter("КПСП_Путь к семейству");
+                                        familyManager.Set(p, @"K:\Стандарт\ТИМ Семейства\0_Библиотека семейств RXX\1 Общие\Аннотации\Типовые аннотации".Replace("RXX", build));
+                                    }
+                                }
+                                else
+                                {
+                                    
+                                }
+
+                            }
+                            catch (Exception ex)
+                            {
+                                TaskDialog.Show("Warning2", ex.ToString());
+                            }
+
+                            /*
+                            p = familyManager.get_Parameter("КПСП_Подкатегория");
+                            familyManager.Set(p, TableEntry.GetSubCategory(pKeyValue));
+                            log += "\nПодкатегория: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
+
+                            p = familyManager.get_Parameter("КПСП_Путь к семейству");
+                            familyManager.Set(p, TableEntry.GetPathToFamily(pKeyValue).Replace("RXX", build));
+
+                            p = familyManager.get_Parameter("КПСП_Инструкция");
+                            familyManager.Set(p, TableEntry.GetPathToInstruction(pKeyValue));
+                            */
+                        }
+                        #endregion
 
                         IList<FamilyInstance> vlozhennieSemeistva = new FilteredElementCollector(doc).OfClass(typeof(FamilyInstance)).WhereElementIsNotElementType().Cast<FamilyInstance>().ToList();
                         string spisokSemeistv = "";
@@ -254,7 +400,7 @@
                         //    estObschieSemeistva = "Да";
                         p = familyManager.get_Parameter("КПСП_Вложенные семейства");
                         familyManager.Set(p, estObschieSemeistva);
-                        log += "\nСемейства: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
+                        //log += "\nСемейства: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
 
                         t.Commit();
                     }
