@@ -61,10 +61,7 @@
                     TaskDialog.Show("Warning2", ex.ToString());
                 }
 
-                if (!isAnnotation)
-                {
-                    var pKey = familyManager.get_Parameter("Код по классификатору");
-                    string pKeyValue = familyType.AsString(pKey);
+
                     var pathToParameter = familyManager.get_Parameter("КПСП_Путь к семейству");
                     string pathTo = familyType.AsString(pathToParameter);
                     SaveForm saveForm = new SaveForm();
@@ -73,7 +70,7 @@
                     saveForm.labelPath.Text = pathTo;
                     saveForm.textComment.Text = " ";
                     saveForm.Show();
-                }
+
                 
                 
 

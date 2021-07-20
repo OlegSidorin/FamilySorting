@@ -50,21 +50,21 @@
                 ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\sh-32.png", UriKind.Absolute)),
                 ToolTip = "Добавляет общие параметры в семейство, которые позволят его каталогизировать"
             };
-            //var SortBtn = panelSort.AddItem(SortBtnData) as PushButton;
-            AddParamsBtnData.LargeImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\sh-32.png", UriKind.Absolute));
+            var AddParamsBtn = panelSort.AddItem(AddParamsBtnData) as PushButton;
+            AddParamsBtn.LargeImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\sh-32.png", UriKind.Absolute));
 
-            var ClearBtnData = new PushButtonData("ClearBtnData", "Очистить\nGUID семейства", path, "FamilySorting.ClearCommand")
-            {
-                ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\duster-32.png", UriKind.Absolute)),
-                ToolTip = "Стирает GUID семейства и его версию, для создания нового семейства на основе данного, например."
-            };
+            //var ClearBtnData = new PushButtonData("ClearBtnData", "Очистить\nGUID семейства", path, "FamilySorting.ClearCommand")
+            //{
+            //    ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\duster-32.png", UriKind.Absolute)),
+            //    ToolTip = "Стирает GUID семейства и его версию, для создания нового семейства на основе данного, например."
+            //};
             //var ClearBtn = panelSort.AddItem(ClearBtnData) as PushButton;
-            ClearBtnData.LargeImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\duster-32.png", UriKind.Absolute));
+            //ClearBtnData.LargeImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\duster-32.png", UriKind.Absolute));
 
-            SplitButtonData sBtnData = new SplitButtonData("splitButton", "Split");
-            SplitButton sBtn = panelSort.AddItem(sBtnData) as SplitButton;
-            sBtn.AddPushButton(AddParamsBtnData);
-            sBtn.AddPushButton(ClearBtnData);
+            //SplitButtonData sBtnData = new SplitButtonData("splitButton", "Split");
+            //SplitButton sBtn = panelSort.AddItem(sBtnData) as SplitButton;
+            //sBtn.AddPushButton(AddParamsBtnData);
+            //sBtn.AddPushButton(ClearBtnData);
 
             var SaveBtnData = new PushButtonData("SaveBtnData", "Сохранить\nв библиотеку", path, "FamilySorting.SaveCommand")
             {

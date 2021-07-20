@@ -43,28 +43,28 @@ namespace FamilySorting
         private void saveButton_Click(object sender, EventArgs e)
         {
 
-            bool isAnnotation = false;
-            try
-            {
+            //bool isAnnotation = false;
+            //try
+            //{
 
-                var fm = new FilteredElementCollector(Doc).OfClass(typeof(Family)).Cast<Family>().ToList().FirstOrDefault();
-                if (fm.FamilyCategory.CategoryType.ToString() == "Annotation")
-                {
-                    isAnnotation = true;
-                }
-                else
-                {
-                    isAnnotation = false;
-                }
+            //    var fm = new FilteredElementCollector(Doc).OfClass(typeof(Family)).Cast<Family>().ToList().FirstOrDefault();
+            //    if (fm.FamilyCategory.CategoryType.ToString() == "Annotation")
+            //    {
+            //        isAnnotation = true;
+            //    }
+            //    else
+            //    {
+            //        isAnnotation = false;
+            //    }
 
-            }
-            catch (Exception ex)
-            {
-                TaskDialog.Show("Warning2", ex.ToString());
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    TaskDialog.Show("Warning2", ex.ToString());
+            //}
 
-            if (!isAnnotation)
-            {
+            //if (!isAnnotation)
+            //{
 
                 #region find problrm with guid
                 bool guidProblem = false;
@@ -125,7 +125,7 @@ namespace FamilySorting
             
                 externalEventSaveExls.Raise();
 
-            }
+            //}
 
             Close(); 
         }

@@ -49,7 +49,7 @@
             };
             string[] paramtersMSKTypeAnnotationArray =
             {
-                "МСК_Марка", "МСК_Наименование", "МСК_Описание", "МСК_ЕдИзм", "МСК_Примечание", "МСК_Обозначение"
+                "МСК_Марка", "МСК_Наименование", "МСК_Описание", "МСК_ЕдИзм", "МСК_Примечание", "МСК_Обозначение", "МСК_Завод-изготовитель"
             };
             string[] paramtersMSKInstArray =
             {
@@ -335,6 +335,34 @@
                                         p = familyManager.get_Parameter("КПСП_Путь к семейству");
                                         familyManager.Set(p, @"K:\Стандарт\ТИМ Семейства\0_Библиотека семейств RXX\1 Общие\Аннотации\Обозначение оси".Replace("RXX", build));
                                     }
+                                    else if (annotationFamily.FamilyCategory.Name.Contains("Головные части уровней"))
+                                    {
+                                        p = familyManager.get_Parameter("КПСП_Подкатегория");
+                                        familyManager.Set(p, "Обозначение уровня");
+                                        p = familyManager.get_Parameter("КПСП_Путь к семейству");
+                                        familyManager.Set(p, @"K:\Стандарт\ТИМ Семейства\0_Библиотека семейств RXX\1 Общие\Аннотации\Обозначение уровня".Replace("RXX", build));
+                                    }
+                                    else if (annotationFamily.FamilyCategory.Name.Contains("Заголовки фрагментов"))
+                                    {
+                                        p = familyManager.get_Parameter("КПСП_Подкатегория");
+                                        familyManager.Set(p, "Обозначение фрагмента");
+                                        p = familyManager.get_Parameter("КПСП_Путь к семейству");
+                                        familyManager.Set(p, @"K:\Стандарт\ТИМ Семейства\0_Библиотека семейств RXX\1 Общие\Аннотации\Обозначение фрагмента".Replace("RXX", build));
+                                    }
+                                    else if (annotationFamily.FamilyCategory.Name.Contains("Основные надписи"))
+                                    {
+                                        p = familyManager.get_Parameter("КПСП_Подкатегория");
+                                        familyManager.Set(p, "Основные надписи");
+                                        p = familyManager.get_Parameter("КПСП_Путь к семейству");
+                                        familyManager.Set(p, @"K:\Стандарт\ТИМ Семейства\0_Библиотека семейств RXX\1 Общие\Аннотации\Основные надписи".Replace("RXX", build));
+                                    }
+                                    else if (annotationFamily.FamilyCategory.Name.Contains("Ссылка на вид"))
+                                    {
+                                        p = familyManager.get_Parameter("КПСП_Подкатегория");
+                                        familyManager.Set(p, "Ссылки на вид");
+                                        p = familyManager.get_Parameter("КПСП_Путь к семейству");
+                                        familyManager.Set(p, @"K:\Стандарт\ТИМ Семейства\0_Библиотека семейств RXX\1 Общие\Аннотации\Ссылки на вид".Replace("RXX", build));
+                                    }
                                     else
                                     {
                                         p = familyManager.get_Parameter("КПСП_Подкатегория");
@@ -353,18 +381,6 @@
                             {
                                 TaskDialog.Show("Warning2", ex.ToString());
                             }
-
-                            /*
-                            p = familyManager.get_Parameter("КПСП_Подкатегория");
-                            familyManager.Set(p, TableEntry.GetSubCategory(pKeyValue));
-                            log += "\nПодкатегория: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
-
-                            p = familyManager.get_Parameter("КПСП_Путь к семейству");
-                            familyManager.Set(p, TableEntry.GetPathToFamily(pKeyValue).Replace("RXX", build));
-
-                            p = familyManager.get_Parameter("КПСП_Инструкция");
-                            familyManager.Set(p, TableEntry.GetPathToInstruction(pKeyValue));
-                            */
                         }
                         #endregion
 
