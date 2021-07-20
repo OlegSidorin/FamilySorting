@@ -459,7 +459,7 @@ namespace FamilySorting
         public static string GetPathToFamily(string key)
         {
             List<TableEntry> te = GetTableEntries();
-            string output = " ";
+            string output = @"C:\Users\" + Main.User + @"\Documents";
             foreach (var s in te)
             {
                 if (s.Key == key)

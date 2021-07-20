@@ -204,10 +204,35 @@
         {
             FamilyManager familyManager = doc.FamilyManager;
             var familyType = familyManager.CurrentType;
+
+            #region check is family type is Annotation
+            bool isAnnotation = false;
+            try
+            {
+
+                var annotationFamily = new FilteredElementCollector(doc).OfClass(typeof(Family)).Cast<Family>().ToList().FirstOrDefault();
+                if (annotationFamily.FamilyCategory.CategoryType.ToString() == "Annotation")
+                {
+                    isAnnotation = true;
+                }
+                else
+                {
+                    isAnnotation = false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                TaskDialog.Show("Warning2", ex.ToString());
+            }
+            #endregion
+
             try
             {
                 var p = familyManager.get_Parameter("КПСП_Путь к семейству");
                 Ssilka = familyType.AsString(p);
+                if ((Ssilka == "") || (Ssilka == " "))
+                    Ssilka = @"C:\Users\" + Main.User + @"\Documents";
                 p = familyManager.get_Parameter("КПСП_GUID семейства");
                 Guid = familyType.AsString(p);
                 p = familyManager.get_Parameter("КПСП_Дисциплина");
@@ -216,10 +241,18 @@
                 Kategoria = familyType.AsString(p);
                 p = familyManager.get_Parameter("КПСП_Подкатегория");
                 Podkaterogia = familyType.AsString(p);
-                p = familyManager.get_Parameter("МСК_Завод-изготовитель");
-                Proizvoditel = familyType.AsString(p);
-                p = familyManager.get_Parameter("МСК_Обозначение");
-                Marka = familyType.AsString(p);
+                if (!isAnnotation)
+                {
+                    p = familyManager.get_Parameter("МСК_Завод-изготовитель");
+                    Proizvoditel = familyType.AsString(p);
+                    p = familyManager.get_Parameter("МСК_Обозначение");
+                    Marka = familyType.AsString(p);
+                }
+                else
+                {
+                    Proizvoditel = "";
+                    Marka = "";
+                }
                 p = familyManager.get_Parameter("КПСП_Вложенные семейства");
                 Vlozhennie = familyType.AsString(p);
                 p = familyManager.get_Parameter("КПСП_Дата редактирования");

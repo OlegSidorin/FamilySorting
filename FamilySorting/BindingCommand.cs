@@ -49,13 +49,17 @@
             };
             string[] paramtersMSKTypeAnnotationArray =
             {
-                "МСК_Марка", "МСК_Наименование", "МСК_Описание", "МСК_ЕдИзм", "МСК_Примечание", "МСК_Обозначение", "МСК_Завод-изготовитель"
+                //"МСК_Марка", "МСК_Наименование", "МСК_Описание", "МСК_ЕдИзм", "МСК_Примечание", "МСК_Обозначение", "МСК_Завод-изготовитель"
             };
             string[] paramtersMSKInstArray =
             {
                 "МСК_Наименование краткое", "МСК_Код изделия",  "МСК_Позиция"
             };
-            
+            string[] paramtersMSKInstAnnotationArray =
+{
+                //"МСК_Наименование краткое", "МСК_Код изделия",  "МСК_Позиция"
+            };
+
             if (doc.IsFamilyDocument)
             {
                 //TaskDialog.Show("Warning", "Privet");
@@ -189,7 +193,7 @@
                                 isExist = false;
                             }
                             isExist = false;
-                            foreach (var st in paramtersMSKInstArray)
+                            foreach (var st in paramtersMSKInstAnnotationArray)
                             {
                                 foreach (FamilyParameter fp in parametersList)
                                 {
@@ -265,6 +269,10 @@
                         p = familyManager.get_Parameter("КПСП_Автор");
                         familyManager.Set(p, User);
                         log += "\nАвтор: " + familyType.AsString(p);
+                        
+                        p = familyManager.get_Parameter("КПСП_Библиотека семейств");
+                        familyManager.Set(p, @"K:\Стандарт\ТИМ Семейства\0_Реестр семейств\Реестр.xlsm");
+                        
 
                         #region set parameters with Classificator Cod
                         if (!isAnnotation)
@@ -283,7 +291,8 @@
                             log += "\nПодкатегория: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
 
                             p = familyManager.get_Parameter("КПСП_Путь к семейству");
-                            familyManager.Set(p, TableEntry.GetPathToFamily(pKeyValue).Replace("RXX", build));
+                            string pathToFam = TableEntry.GetPathToFamily(pKeyValue).Replace("RXX", build);
+                            familyManager.Set(p, pathToFam);
 
                             log += "\nПуть к семейству: " + familyType.AsString(p) + ": " + familyType.AsString(pKey);
                             p = familyManager.get_Parameter("КПСП_Инструкция");

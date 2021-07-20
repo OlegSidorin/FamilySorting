@@ -23,8 +23,6 @@
             Document doc = uiDoc.Document;
             string path = Assembly.GetExecutingAssembly().Location;
 
-
-
             if (doc.IsFamilyDocument)
             {
                 FamilyManager familyManager = doc.FamilyManager;
@@ -41,6 +39,7 @@
                     }
                 }
 
+                #region check is family type is Annotation
                 bool isAnnotation = false;
                 try
                 {
@@ -60,17 +59,24 @@
                 {
                     TaskDialog.Show("Warning2", ex.ToString());
                 }
+                #endregion
 
-
+                string pathTo = "";
+                try
+                {
                     var pathToParameter = familyManager.get_Parameter("КПСП_Путь к семейству");
-                    string pathTo = familyType.AsString(pathToParameter);
+                    pathTo = familyType.AsString(pathToParameter);
                     SaveForm saveForm = new SaveForm();
                     saveForm.Doc = doc;
                     saveForm.textFamilyName.Text = doc.Title;
                     saveForm.labelPath.Text = pathTo;
-                    saveForm.textComment.Text = " ";
+                    saveForm.textComment.Text = "";
                     saveForm.Show();
-
+                }
+                catch
+                {
+                    TaskDialog.Show("Warning", "Не заполнены параметры семейства");
+                }
                 
                 
 

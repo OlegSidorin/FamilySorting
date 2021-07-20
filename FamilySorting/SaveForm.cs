@@ -66,64 +66,68 @@ namespace FamilySorting
             //if (!isAnnotation)
             //{
 
-                #region find problrm with guid
-                bool guidProblem = false;
-                var fp = new FamilyParameters();
-                fp.GetParameters(Doc);
+            #region find problrm with guid
+            bool guidProblem = false;
+            var fp = new FamilyParameters();
+            fp.GetParameters(Doc);
 
-                using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(Main.ReestrPath)))
+            using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(Main.ReestrPath)))
+            {
+                foreach (var ws in excelPackage.Workbook.Worksheets)
                 {
-                    foreach (var ws in excelPackage.Workbook.Worksheets)
+                    if (ws.ToString() == "Реестр семейств")
                     {
-                        if (ws.ToString() == "Реестр семейств")
+                        int row = 2;
+                        while ((ws.Cells[row, 1].Value != null) & (ws.Cells[row, 2].Value != null) & (ws.Cells[row, 6].Value != null))
                         {
-                            int row = 2;
-                            while ((ws.Cells[row, 1].Value != null) & (ws.Cells[row, 2].Value != null) & (ws.Cells[row, 6].Value != null))
+                            if (ws.Cells[row, 1].Value.ToString() == fp.Guid)
                             {
-                                if (ws.Cells[row, 1].Value.ToString() == fp.Guid)
+                                if (ws.Cells[row, 2].Value.ToString() == fp.Disciplina &&
+                                    ws.Cells[row, 3].Value.ToString() == fp.Kategoria &&
+                                    ws.Cells[row, 4].Value.ToString() == fp.Podkaterogia &&
+                                    ws.Cells[row, 5].Value.ToString().Replace(".rfa", "") == textFamilyName.Text.ToString())
                                 {
-                                    if (ws.Cells[row, 2].Value.ToString() == fp.Disciplina &&
-                                        ws.Cells[row, 3].Value.ToString() == fp.Kategoria &&
-                                        ws.Cells[row, 4].Value.ToString() == fp.Podkaterogia &&
-                                        ws.Cells[row, 5].Value.ToString().Replace(".rfa", "") == textFamilyName.Text.ToString())
-                                    {
-                                        guidProblem = false;
-                                    }
-                                    else
-                                    {
-                                        guidProblem = true;
-                                    }
+                                    guidProblem = false;
                                 }
-                                row += 1;
+                                else
+                                {
+                                    guidProblem = true;
+                                }
                             }
+                            row += 1;
                         }
                     }
                 }
-                #endregion
+            }
+            #endregion
 
-                #region new guid or simply new ver
-                if (guidProblem)
-                {
-                    externalEventNewGuid.Raise();
-                }
-                else
-                {
-                    externalEventNewVer.Raise();
-                }
-                #endregion 
+            #region new guid or simply new ver
+            if (guidProblem)
+            {
+                externalEventNewGuid.Raise();
+            }
+            else
+            {
+                externalEventNewVer.Raise();
+            }
+            #endregion 
 
-                SaveAsOptions sao = new SaveAsOptions();
-                sao.OverwriteExistingFile = true;
-                if (!Directory.Exists(labelPath.Text.ToString() + @"\"))
-                {
-                    Directory.CreateDirectory(labelPath.Text.ToString() + @"\");
-                }
+            SaveAsOptions sao = new SaveAsOptions();
+            sao.OverwriteExistingFile = true;
+            if (!Directory.Exists(labelPath.Text.ToString() + @"\"))
+            {
+                Directory.CreateDirectory(labelPath.Text.ToString() + @"\");
+            }
 
-                Doc.SaveAs(labelPath.Text.ToString() + @"\" + textFamilyName.Text.ToString() + ".rfa", sao);
+            Doc.SaveAs(labelPath.Text.ToString() + @"\" + textFamilyName.Text.ToString() + ".rfa", sao);
 
-                SaveForm.Comment = textComment.Text.ToString();
-            
+            SaveForm.Comment = textComment.Text.ToString();
+                
+            if (!(fp.Ssilka == @"C:\Users\" + Main.User + @"\Documents"))
+            {
                 externalEventSaveExls.Raise();
+            }
+            
 
             //}
 
@@ -313,6 +317,8 @@ namespace FamilySorting
                     }
 
                 }
+
+                
 
                 return;
             }
