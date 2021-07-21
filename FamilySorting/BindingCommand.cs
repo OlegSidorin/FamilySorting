@@ -36,8 +36,29 @@
                 t.Commit();
             }
 
-
-            string[] paramtersArray =
+            string[] guidsArray =
+            {
+                "11b18c00-5d82-4226-8b5f-74526a7ec4f8", "3c0744d8-3713-4311-b03e-885f7441d360", "f956074c-276f-4f03-bcdf-890dc4a6038a",
+                "eb3b5f14-25f5-41eb-942f-d8dd33d766c1",
+                "37384649-c3c8-4fc2-a08e-c2206438f528", "85cd0032-c9ee-4cd3-8ffa-b2f1a05328e3", "fd97b929-0274-408b-8299-9981cb982fc5",
+                "fdf7bfa4-5294-45c5-b979-c388d3a062da", "18ea3aa8-5275-470f-94da-e35bb4c80e46", "728fe6d4-f0e9-4418-b261-25c67382b379",
+                "0b3fd4ed-0256-43e5-a997-5311f4c19091", "A80FE9BB-B06E-46BD-B50D-D32486ED228F", "8F0F22FE-8DA1-4CF3-B94D-3DC33041E5D3",
+                "fb30c7d4-3e3c-4fe6-821b-189cf35b7f9f", "647b5bc9-6570-416c-93d3-bd0d159775f2", "a8cdbf7b-d60a-485e-a520-447d2055f351",
+                "8b5e61a2-b091-491c-8092-0b01a55d4f45", "9b3dbd60-5be3-4842-9dbe-cd644ef5f9e8", "946c4e27-a56c-422d-999c-778a150b950e",
+                "a8832df7-0302-4a63-a6e1-47a01632b987", "8f2e4f93-9472-4941-a65d-0ac468fd6a6d", "da753fe3-ecfa-465b-9a2c-02f55d0c2ff1",
+                "293f055d-6939-4611-87b7-9a50d0c1f51e", "14e630a8-bc4f-4556-9094-647e8f323f08", "ef3ac60d-2cf8-4bd8-bd66-dbcb42e92f4a",
+                "f13b35e5-9fb9-4cf8-b330-efe01d3780c4", "e7edd112-da46-46c3-886c-934dad841efb",
+                "bfa2f0d2-ccd0-4a02-95c7-573f0a9829c3", "2fd9e8cb-84f3-4297-b8b8-75f444e124ed",  "ae8ff999-1f22-4ed7-ad33-61503d85f0f4"
+            };
+            string[] parametersForGuidsArray =
+            {
+                "КПСП_GUID семейства", "КПСП_Дисциплина", "КПСП_Категория", "КПСП_Подкатегория", "МСК_Версия Revit", "МСК_Версия семейства", "КПСП_Статус",
+                "КПСП_Библиотека семейств", "КПСП_Инструкция", "КПСП_Путь к семейству", "КПСП_Дата редактирования", "КПСП_Автор", "КПСП_Вложенные семейства",
+                "МСК_Марка", "МСК_Наименование", "МСК_Завод-изготовитель", "МСК_Материал", "МСК_Описание", "МСК_Масса", "МСК_Масса_Текст",
+                "МСК_Размер_Ширина", "МСК_Размер_Высота", "МСК_Размер_Толщина", "МСК_Размер_Глубина", "МСК_ЕдИзм", "МСК_Примечание", "МСК_Обозначение",
+                "МСК_Наименование краткое", "МСК_Код изделия",  "МСК_Позиция"
+            };
+            string[] parametersArray =
             {
                 "КПСП_GUID семейства", "КПСП_Дисциплина", "КПСП_Категория", "КПСП_Подкатегория", "МСК_Версия Revit", "МСК_Версия семейства", "КПСП_Статус",  
                 "КПСП_Библиотека семейств", "КПСП_Инструкция", "КПСП_Путь к семейству", "КПСП_Дата редактирования", "КПСП_Автор", "КПСП_Вложенные семейства"
@@ -45,7 +66,7 @@
             string[] paramtersMSKTypeArray =
             {
                 "МСК_Марка", "МСК_Наименование", "МСК_Завод-изготовитель", "МСК_Материал", "МСК_Описание", "МСК_Масса", "МСК_Масса_Текст",
-                "МСК_Размер_Ширина", "МСК_Размер_Высота", "МСК_Размер_Толщина", "МСК_Размер_Глубина", "МСК_ЕдИзм", "МСК_Примечание", "МСК_Обозначение",
+                "МСК_Размер_Ширина", "МСК_Размер_Высота", "МСК_Размер_Толщина", "МСК_Размер_Глубина", "МСК_ЕдИзм", "МСК_Примечание", "МСК_Обозначение"
             };
             string[] paramtersMSKTypeAnnotationArray =
             {
@@ -66,6 +87,29 @@
                 FamilyManager familyManager = doc.FamilyManager;
                 FamilyType familyType;
                 familyType = familyManager.CurrentType;
+
+                FamilyParameterSet parametersList = familyManager.Parameters;
+
+                for (var i = 0; i < guidsArray.Length; i++)
+                {
+                    var p = familyManager.get_Parameter(new Guid(guidsArray[i]));
+                    if (p != null)
+                    {
+                        if (!(p.Definition.Name == parametersForGuidsArray[i]))
+                        {
+                            using (Transaction tr = new Transaction(doc, "delete parameter"))
+                            {
+                                tr.Start();
+                                string str1 = p.Definition.Name;
+                                familyManager.RemoveParameter(p);
+                                TaskDialog.Show("Warning", "Был удален общий параметр: " + str1);
+                                tr.Commit();
+                            }
+                        }
+                    }
+                    
+                }
+
                 #region check is family type is Annotation
                 bool isAnnotation = false;
                 try
@@ -108,9 +152,10 @@
                         DefinitionGroup sharedParametersGroup = sharedParametersFile.Groups.get_Item("14_Управление семействами");
                         Definition sharedParameterDefinition;
                         ExternalDefinition externalDefinition;
-                        FamilyParameterSet parametersList = familyManager.Parameters;
+                        parametersList = familyManager.Parameters;
+
                         isExist = false;
-                        foreach (var st in paramtersArray)
+                        foreach (var st in parametersArray)
                         {
                             foreach (FamilyParameter fp in parametersList)
                             {
@@ -442,6 +487,7 @@
             }
 
             //TaskDialog.Show("Final", log);
+            commandData.Application.Application.SharedParametersFilename = Main.FOP_KSP_Path;
             return Result.Succeeded;
         }
     }

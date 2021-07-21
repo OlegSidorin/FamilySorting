@@ -25,14 +25,28 @@
             string fopFilePath = Main.FOPPath;
             string log = "";
             bool isExist = false;
-            string[] paramtersArray =
+            string[] giudKPSPArray =
             {
-                "КПСП_GUID семейства", "МСК_Версия семейства"
+                "11b18c00-5d82-4226-8b5f-74526a7ec4f8", "3c0744d8-3713-4311-b03e-885f7441d360", "f956074c-276f-4f03-bcdf-890dc4a6038a", 
+                "eb3b5f14-25f5-41eb-942f-d8dd33d766c1",
+                "37384649-c3c8-4fc2-a08e-c2206438f528", "85cd0032-c9ee-4cd3-8ffa-b2f1a05328e3", "fd97b929-0274-408b-8299-9981cb982fc5",
+                "fdf7bfa4-5294-45c5-b979-c388d3a062da", "18ea3aa8-5275-470f-94da-e35bb4c80e46", "728fe6d4-f0e9-4418-b261-25c67382b379",
+                "0b3fd4ed-0256-43e5-a997-5311f4c19091", "A80FE9BB-B06E-46BD-B50D-D32486ED228F", "8F0F22FE-8DA1-4CF3-B94D-3DC33041E5D3"
             };
-            
+            string[] guidMSKTypeArray =
+            {
+                "fb30c7d4-3e3c-4fe6-821b-189cf35b7f9f", "647b5bc9-6570-416c-93d3-bd0d159775f2", "a8cdbf7b-d60a-485e-a520-447d2055f351", // последний завод, кот выз ошибку
+                "8b5e61a2-b091-491c-8092-0b01a55d4f45", "9b3dbd60-5be3-4842-9dbe-cd644ef5f9e8", "946c4e27-a56c-422d-999c-778a150b950e",
+                "a8832df7-0302-4a63-a6e1-47a01632b987", "8f2e4f93-9472-4941-a65d-0ac468fd6a6d", "da753fe3-ecfa-465b-9a2c-02f55d0c2ff1",
+                "293f055d-6939-4611-87b7-9a50d0c1f51e", "14e630a8-bc4f-4556-9094-647e8f323f08", "ef3ac60d-2cf8-4bd8-bd66-dbcb42e92f4a",
+                "f13b35e5-9fb9-4cf8-b330-efe01d3780c4", "e7edd112-da46-46c3-886c-934dad841efb"
+            };
+            string[] guidMSKInstArray =
+            {
+                "bfa2f0d2-ccd0-4a02-95c7-573f0a9829c3", "2fd9e8cb-84f3-4297-b8b8-75f444e124ed",  "ae8ff999-1f22-4ed7-ad33-61503d85f0f4"
+            };
             if (doc.IsFamilyDocument)
             {
-                //TaskDialog.Show("Warning", "Privet");
                 FamilyManager familyManager = doc.FamilyManager;
                 FamilyType familyType;
                 familyType = familyManager.CurrentType;
@@ -47,77 +61,61 @@
                     }
                 }
 
+                #region clear 
+                //TaskDialog.Show("Warning", "Privet");
                 try
                 {
                     commandData.Application.Application.SharedParametersFilename = fopFilePath;
-                    using (Transaction t = new Transaction(doc,"Clear GUID"))
+                    using (Transaction t = new Transaction(doc,"Clear"))
                     {
                         t.Start();
-                        DefinitionFile sharedParametersFile = commandData.Application.Application.OpenSharedParameterFile();
-                        DefinitionGroup sharedParametersGroup = sharedParametersFile.Groups.get_Item("14_Управление семействами");
-                        Definition sharedParameterDefinition;
-                        ExternalDefinition externalDefinition;
-
                         FamilyParameterSet parametersList = familyManager.Parameters;
 
-                        isExist = false;
-                        foreach (var st in paramtersArray)
+                        foreach (var guid in giudKPSPArray)
                         {
-                            foreach (FamilyParameter fp in parametersList)
+                            try
                             {
-                                if (st == fp.Definition.Name)                              
-                                    isExist = true;
+                                var p = familyManager.get_Parameter(new Guid(guid)); 
+                                familyManager.RemoveParameter(p);
                             }
-                            if (!isExist)
+                            catch
                             {
-                                sharedParameterDefinition = sharedParametersGroup.Definitions.get_Item(st);
-                                externalDefinition = sharedParameterDefinition as ExternalDefinition;
-                                familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_ADSK_MODEL_PROPERTIES, false);
-                                log += "\nДобавлен параметр <" + st + ">";
+                                
                             }
-                            isExist = false;
-
                         }
-                        isExist = false;
-                        
+                        foreach (var guid in guidMSKTypeArray)
+                        {
+                            try
+                            {
+                                var p = familyManager.get_Parameter(new Guid(guid));
+                                familyManager.RemoveParameter(p);
+                            }
+                            catch
+                            {
+                                
+                            }
+                        }
+                        foreach (var guid in guidMSKInstArray)
+                        {
+                            try
+                            {
+                                var p = familyManager.get_Parameter(new Guid(guid)); 
+                                familyManager.RemoveParameter(p);
+                            }
+                            catch
+                            {
+                                
+                            }
+                        }
                         t.Commit();
                     }
-
                 }
                 catch (Exception e)
                 {
                     TaskDialog.Show("Warning 1", e.ToString());
                 }
-                try
-                {
-                    using (Transaction t = new Transaction(doc, "Apply"))
-                    {
-                        t.Start();
-                        log += "\n---";
 
-                        var p = familyManager.get_Parameter("КПСП_GUID семейства");
-
-                        if (familyType.AsString(p) != "")
-                        {
-                            familyManager.Set(p, "");
-                            log += "\nКПСП_GUID семейства пуст ";
-                        }
-
-                        p = familyManager.get_Parameter("МСК_Версия семейства");
-
-                        if (familyType.AsString(p) != "")
-                        {
-                            familyManager.Set(p, "");
-                            log += "\nМСК_Версия семейства пуст ";
-                        }
-
-                        t.Commit();
-                    }
-                }
-                catch (Exception e)
-                {
-                    TaskDialog.Show("Warning 2", e.ToString());
-                }
+                #endregion
 
             }
             else

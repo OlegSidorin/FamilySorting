@@ -85,6 +85,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClearGUIDCommand.cs" />
     <Compile Include="SaveCommand.cs" />
     <Compile Include="ClassCommand.cs" />
     <Compile Include="ClearCommand.cs" />
