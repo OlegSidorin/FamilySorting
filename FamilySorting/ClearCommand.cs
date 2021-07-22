@@ -38,7 +38,7 @@
                 "fb30c7d4-3e3c-4fe6-821b-189cf35b7f9f", "647b5bc9-6570-416c-93d3-bd0d159775f2", "a8cdbf7b-d60a-485e-a520-447d2055f351", // последний завод, кот выз ошибку
                 "8b5e61a2-b091-491c-8092-0b01a55d4f45", "9b3dbd60-5be3-4842-9dbe-cd644ef5f9e8", "946c4e27-a56c-422d-999c-778a150b950e",
                 "a8832df7-0302-4a63-a6e1-47a01632b987", "8f2e4f93-9472-4941-a65d-0ac468fd6a6d", "da753fe3-ecfa-465b-9a2c-02f55d0c2ff1",
-                "293f055d-6939-4611-87b7-9a50d0c1f51e", "14e630a8-bc4f-4556-9094-647e8f323f08", "ef3ac60d-2cf8-4bd8-bd66-dbcb42e92f4a",
+                "ef3ac60d-2cf8-4bd8-bd66-dbcb42e92f4a",
                 "f13b35e5-9fb9-4cf8-b330-efe01d3780c4", "e7edd112-da46-46c3-886c-934dad841efb"
             };
             string[] guidMSKInstArray =
@@ -83,30 +83,30 @@
                                 
                             }
                         }
-                        foreach (var guid in guidMSKTypeArray)
-                        {
-                            try
-                            {
-                                var p = familyManager.get_Parameter(new Guid(guid));
-                                familyManager.RemoveParameter(p);
-                            }
-                            catch
-                            {
+                        //foreach (var guid in guidMSKTypeArray)
+                        //{
+                        //    try
+                        //    {
+                        //        var p = familyManager.get_Parameter(new Guid(guid));
+                        //        familyManager.RemoveParameter(p);
+                        //    }
+                        //    catch
+                        //    {
                                 
-                            }
-                        }
-                        foreach (var guid in guidMSKInstArray)
-                        {
-                            try
-                            {
-                                var p = familyManager.get_Parameter(new Guid(guid)); 
-                                familyManager.RemoveParameter(p);
-                            }
-                            catch
-                            {
+                        //    }
+                        //}
+                        //foreach (var guid in guidMSKInstArray)
+                        //{
+                        //    try
+                        //    {
+                        //        var p = familyManager.get_Parameter(new Guid(guid)); 
+                        //        familyManager.RemoveParameter(p);
+                        //    }
+                        //    catch
+                        //    {
                                 
-                            }
-                        }
+                        //    }
+                        //}
                         t.Commit();
                     }
                 }
