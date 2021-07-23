@@ -192,7 +192,7 @@
                                     if (sharedParameterDefinition.Name == "МСК_Материал")
                                         familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_MATERIALS, false);
                                     else if (sharedParameterDefinition.Name.Contains("МСК_Размер_"))
-                                        familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.INVALID, false);
+                                        familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_GEOMETRY, false);
                                     else
                                         familyManager.AddParameter(externalDefinition, BuiltInParameterGroup.PG_TEXT, false);
                                     log += "\nДобавлен параметр <" + st + ">";
@@ -339,8 +339,17 @@
                             #region set parameters with Classificator Cod
                             if (!isAnnotation)
                             {
-                                p = familyManager.get_Parameter("Код по классификатору");
-                                familyManager.Set(p, pKeyValue);
+                                try
+                                {
+                                    p = familyManager.get_Parameter("Код по классификатору");
+                                    familyManager.Set(p, pKeyValue);
+                                }
+                                catch 
+                                {
+                                    TaskDialog.Show("Ahtung", "Не назначен Код классификатора. \nДля того, что бы назначить " +
+                                        "Код классификатора перейдите на вкладку Создание и в Типоразмерах в семействе выберите " +
+                                        "соответстующий Код классификатора.");
+                                }
 
                                 p = familyManager.get_Parameter("КПСП_Дисциплина");
                                 familyManager.Set(p, TableEntry.GetDiscipline(pKeyValue));

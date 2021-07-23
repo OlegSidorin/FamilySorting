@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Threading;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -19,6 +20,7 @@ namespace FamilySorting
         public Document Doc { get; set; }
 
         public static string Comment { get; set; } = "";
+        public static string SaveFilePath { get; set; } = "";
 
         public SaveButtonExternalEventNewGuid saveButtonExternalEventNewGuid;
         public ExternalEvent externalEventNewGuid;
@@ -29,6 +31,9 @@ namespace FamilySorting
         public SaveButtonExternalEventNewVer saveButtonExternalEventNewVer;
         public ExternalEvent externalEventNewVer;
 
+        public SaveButtonExternalEventSaveFile saveButtonExternalEventSaveFile;
+        public ExternalEvent externalEventSaveFile;
+
         public SaveForm()
         {
             InitializeComponent();
@@ -38,33 +43,12 @@ namespace FamilySorting
             externalEventSaveExls = ExternalEvent.Create(saveButtonExternalEventSaveExls);
             saveButtonExternalEventNewVer = new SaveButtonExternalEventNewVer();
             externalEventNewVer = ExternalEvent.Create(saveButtonExternalEventNewVer);
+            saveButtonExternalEventSaveFile = new SaveButtonExternalEventSaveFile();
+            externalEventSaveFile = ExternalEvent.Create(saveButtonExternalEventSaveFile);
         }
 
         private void saveButton_Click(object sender, EventArgs e)
         {
-
-            //bool isAnnotation = false;
-            //try
-            //{
-
-            //    var fm = new FilteredElementCollector(Doc).OfClass(typeof(Family)).Cast<Family>().ToList().FirstOrDefault();
-            //    if (fm.FamilyCategory.CategoryType.ToString() == "Annotation")
-            //    {
-            //        isAnnotation = true;
-            //    }
-            //    else
-            //    {
-            //        isAnnotation = false;
-            //    }
-
-            //}
-            //catch (Exception ex)
-            //{
-            //    TaskDialog.Show("Warning2", ex.ToString());
-            //}
-
-            //if (!isAnnotation)
-            //{
 
             #region find problrm with guid
             bool guidProblem = false;
@@ -110,16 +94,7 @@ namespace FamilySorting
             {
                 externalEventNewVer.Raise();
             }
-            #endregion 
-
-            SaveAsOptions sao = new SaveAsOptions();
-            sao.OverwriteExistingFile = true;
-            if (!Directory.Exists(labelPath.Text.ToString() + @"\"))
-            {
-                Directory.CreateDirectory(labelPath.Text.ToString() + @"\");
-            }
-
-            Doc.SaveAs(labelPath.Text.ToString() + @"\" + textFamilyName.Text.ToString() + ".rfa", sao);
+            #endregion
 
             SaveForm.Comment = textComment.Text.ToString();
                 
@@ -127,10 +102,20 @@ namespace FamilySorting
             {
                 externalEventSaveExls.Raise();
             }
+
             
+            SaveFilePath = labelPath.Text.ToString() + @"\" + textFamilyName.Text.ToString() + ".rfa";
+            SaveAsOptions sao = new SaveAsOptions();
+            sao.OverwriteExistingFile = true;
+            if (!Directory.Exists(labelPath.Text.ToString() + @"\"))
+            {
+                Directory.CreateDirectory(labelPath.Text.ToString() + @"\");
+            }
+
+            Doc.SaveAs(SaveFilePath, sao);
 
             //}
-
+            externalEventSaveFile.Raise();
             Close(); 
         }
 
@@ -326,6 +311,22 @@ namespace FamilySorting
             public string GetName()
             {
                 return "External Event On Save Exls";
+            }
+        }
+        public class SaveButtonExternalEventSaveFile : IExternalEventHandler
+        {
+            public void Execute(UIApplication app)
+            {
+                UIDocument uidoc = app.ActiveUIDocument;
+                Document doc = uidoc.Document;
+                Methods methods = new Methods();
+                methods.SaveFile(doc);
+                return;
+            }
+
+            public string GetName()
+            {
+                return "External Event On Save Button";
             }
         }
     }

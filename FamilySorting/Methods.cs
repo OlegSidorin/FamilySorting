@@ -29,6 +29,10 @@
                 FamilyManager familyManager = doc.FamilyManager;
                 FamilyType familyType;
                 familyType = familyManager.CurrentType;
+
+                FamilyTypeSet types = familyManager.Types;
+                Guid famGuid = Guid.NewGuid();
+
                 if (familyType == null)
                 {
                     using (Transaction t = new Transaction(doc, "change"))
@@ -39,33 +43,40 @@
                         t.Commit();
                     }
                 }
-                try
+
+                foreach (FamilyType type in types)
                 {
-                    using (Transaction t = new Transaction(doc, "Apply"))
+                    try
                     {
-                        t.Start();
+                        using (Transaction t = new Transaction(doc, "Apply"))
+                        {
+                            t.Start();
 
-                        var p = familyManager.get_Parameter("КПСП_GUID семейства");
-                        var guid = Guid.NewGuid().ToString();
-                        familyManager.Set(p, guid);
+                            familyManager.CurrentType = type;
 
-                        p = familyManager.get_Parameter("МСК_Версия семейства");
-                        familyManager.Set(p, "1");
+                            var p = familyManager.get_Parameter("КПСП_GUID семейства");
+                            
+                            familyManager.Set(p, famGuid.ToString());
 
-                        p = familyManager.get_Parameter("КПСП_Дата редактирования");
-                        DateTime today = DateTime.Now;
-                        int.TryParse(today.Day.ToString(), out int dayInt);
-                        int.TryParse(today.Month.ToString(), out int monthInt);
-                        string sDate = String.Format("{0:D2}-{1:D2}-{2}", dayInt, monthInt, today.Year.ToString());
-                        familyManager.Set(p, sDate);
+                            p = familyManager.get_Parameter("МСК_Версия семейства");
+                            familyManager.Set(p, "1");
 
-                        t.Commit();
+                            p = familyManager.get_Parameter("КПСП_Дата редактирования");
+                            DateTime today = DateTime.Now;
+                            int.TryParse(today.Day.ToString(), out int dayInt);
+                            int.TryParse(today.Month.ToString(), out int monthInt);
+                            string sDate = String.Format("{0:D2}-{1:D2}-{2}", dayInt, monthInt, today.Year.ToString());
+                            familyManager.Set(p, sDate);
+
+                            t.Commit();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        TaskDialog.Show("!Warning!", e.ToString());
                     }
                 }
-                catch (Exception e)
-                {
-                    TaskDialog.Show("!Warning!", e.ToString());
-                }
+                    
 
             }
             else
@@ -84,6 +95,9 @@
                 FamilyManager familyManager = doc.FamilyManager;
                 FamilyType familyType;
                 familyType = familyManager.CurrentType;
+
+                FamilyTypeSet types = familyManager.Types;
+                
                 if (familyType == null)
                 {
                     using (Transaction t = new Transaction(doc, "change"))
@@ -94,40 +108,62 @@
                         t.Commit();
                     }
                 }
-                try
+                string versia = "";
+                string curDate = "";
+
+                using (Transaction t = new Transaction(doc, "vers & date"))
                 {
-                    using (Transaction t = new Transaction(doc, "Apply"))
+                    t.Start();
+                    var p = familyManager.get_Parameter("МСК_Версия семейства");
+                    string vs = familyType.AsString(p);
+                    int vs_int = 1;
+                    if (vs != "")
                     {
-                        t.Start();
-
-                        var p = familyManager.get_Parameter("МСК_Версия семейства");
-                        string vs = familyType.AsString(p);
-                        int vs_int = 1;
-                        if (vs != "")
-                        {
-                            int.TryParse(vs, out vs_int);
-                            vs_int += 1;
-                            familyManager.Set(p, vs_int.ToString());
-                        }
-                        if (vs == "")
-                        {
-                            familyManager.Set(p, "1");
-                        }
-
-                        p = familyManager.get_Parameter("КПСП_Дата редактирования");
-                        DateTime today = DateTime.Now;
-                        int.TryParse(today.Day.ToString(), out int dayInt);
-                        int.TryParse(today.Month.ToString(), out int monthInt);
-                        string sDate = String.Format("{0:D2}-{1:D2}-{2}", dayInt, monthInt, today.Year.ToString());
-                        familyManager.Set(p, sDate);
-
-                        t.Commit();
+                        int.TryParse(vs, out vs_int);
+                        vs_int += 1;
+                        versia = vs_int.ToString();
+                        familyManager.Set(p, versia);
                     }
+                    if (vs == "")
+                    {
+                        versia = "1";
+                        familyManager.Set(p, versia);
+                    }
+
+                    p = familyManager.get_Parameter("КПСП_Дата редактирования");
+                    DateTime today = DateTime.Now;
+                    int.TryParse(today.Day.ToString(), out int dayInt);
+                    int.TryParse(today.Month.ToString(), out int monthInt);
+                    string sDate = String.Format("{0:D2}-{1:D2}-{2}", dayInt, monthInt, today.Year.ToString());
+                    curDate = sDate;
+                    familyManager.Set(p, curDate);
+                    t.Commit();
                 }
-                catch (Exception e)
-                {
-                    TaskDialog.Show("!Warning!", e.ToString());
-                }
+
+                    foreach (FamilyType type in types)
+                    {
+                        try
+                        {
+                            using (Transaction t = new Transaction(doc, "Apply"))
+                            {
+                                t.Start();
+
+                                familyManager.CurrentType = type;
+
+                                var p = familyManager.get_Parameter("МСК_Версия семейства");
+                                familyManager.Set(p, versia);
+
+                                p = familyManager.get_Parameter("КПСП_Дата редактирования");
+                                familyManager.Set(p, curDate);
+
+                                t.Commit();
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            TaskDialog.Show("!Warning!", e.ToString());
+                        }
+                    }
 
             }
             else
@@ -135,6 +171,32 @@
                 TaskDialog.Show("Warning main", "Это не семейство, команда работает только в семействе");
             }
 
+        }
+        public void SaveFile(Document doc)
+        {
+            doc.Save();
+            var docPath = doc.PathName.ToString();
+            var dir = Path.GetFullPath(docPath).ToString();
+            string[] st = Directory.GetFiles(dir, "00?.rfa");
+
+            TaskDialog.Show("Warn", "Privet");
+            foreach (var s in st) 
+            {
+                if (File.Exists(s))
+                {
+                    try
+                    {
+                        File.Delete(s);
+                    }
+                    catch (System.IO.IOException e)
+                    {
+                        
+                        return;
+                    }
+                }
+            }
+
+            
         }
         public string GetParameter(Document doc, string str)
         {
