@@ -11,11 +11,12 @@
     using Autodesk.Revit.UI;
     public class Main : IExternalApplication
     {
+        public static string Folder { get; set; } = "K:\\Стандарт\\ТИМ Семейства\\";
         public static string TabName { get; set; } = "КПСП";
         public static string PanelSortName { get; set; } = "Семейства";
         public static string Comment { get; set; } = " ";
-        public static string FolderReestrPath { get; set; } = "K:\\Стандарт\\ТИМ Семейства\\0_Реестр семейств\\Админ";
-        public static string ReestrPath { get; set; } = "K:\\Стандарт\\ТИМ Семейства\\0_Реестр семейств\\Админ\\Реестр_семейств.xlsx";
+        public static string FolderReestrPath { get; set; } = Folder + "0_Реестр семейств\\Админ";
+        public static string ReestrPath { get; set; } = Folder + "0_Реестр семейств\\Админ\\Реестр_семейств.xlsx";
         public static string FOPPath { get; set; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\res\\ФОП.txt";
         public static string FOP_KSP_Path { get; set; } = "K:\\Стандарт\\ТИМ Шаблоны\\КПСП_ФОП.txt";
         public static string ClassificatorPath { get; set; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\res\\Классификатор семейств.txt";
@@ -38,6 +39,19 @@
             }
             RibbonPanel panelSort = application.CreateRibbonPanel(TabName, PanelSortName);
             string path = Assembly.GetExecutingAssembly().Location;
+            string folderTemp = "";
+            string familyFolderPath = path.Replace(@"\FamilySorting.dll", "") + @"\res\folder.txt";
+
+            // Open the file to read from.
+            //using (StreamReader sr = File.OpenText(familyFolderPath))
+            //{
+            //    string s;
+            //    while ((s = sr.ReadLine()) != null)
+            //    {
+            //        folderTemp += s;
+            //    }
+            //}
+            //Folder = folderTemp;
 
             var ClassBtnData = new PushButtonData("ClassBtnData", "Назначить\nклассификатор", path, "FamilySorting.ClassCommand")
             {
@@ -58,15 +72,24 @@
             var ClearBtnData = new PushButtonData("ClearBtnData", "Очистить\nсемейство", path, "FamilySorting.ClearCommand")
             {
                 ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\duster-32.png", UriKind.Absolute)),
-                ToolTip = "Удаляются общие параметры из семейства, которые добавляются плагином"
+                ToolTip = "Удаляются общие параметры из семейства из группы Свойства модели"
             };
             //var ClearBtn = panelSort.AddItem(ClearBtnData) as PushButton;
             ClearBtnData.LargeImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\duster-32.png", UriKind.Absolute));
+
+            //var FolderBtnData = new PushButtonData("FolderBtnData", "Расположение\nбиблиотеки", path, "FamilySorting.FolderCommand")
+            //{
+            //    ToolTipImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\folder-32.png", UriKind.Absolute)),
+            //    ToolTip = "Установить расположение библиотеки семейств"
+            //};
+            ////var FolderBtn = panelSort.AddItem(FolderBtnData) as PushButton;
+            //FolderBtnData.LargeImage = new BitmapImage(new Uri(Path.GetDirectoryName(path) + "\\res\\folder-32.png", UriKind.Absolute));
 
             SplitButtonData sBtnData = new SplitButtonData("splitButton", "Split");
             SplitButton sBtn = panelSort.AddItem(sBtnData) as SplitButton;
             sBtn.AddPushButton(AddParamsBtnData);
             sBtn.AddPushButton(ClearBtnData);
+            //sBtn.AddPushButton(FolderBtnData);
 
             var SaveBtnData = new PushButtonData("SaveBtnData", "Сохранить\nв библиотеку", path, "FamilySorting.SaveCommand")
             {

@@ -85,7 +85,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FolderCommand.cs" />
     <Compile Include="ClearGUIDCommand.cs" />
+    <Compile Include="FolderPath.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FolderPath.Designer.cs">
+      <DependentUpon>FolderPath.cs</DependentUpon>
+    </Compile>
     <Compile Include="SaveCommand.cs" />
     <Compile Include="ClassCommand.cs" />
     <Compile Include="ClearCommand.cs" />
@@ -115,6 +122,15 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="res\folder-32.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="res\folder.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="res\folder.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="res\save-32.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -155,6 +171,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="FolderPath.resx">
+      <DependentUpon>FolderPath.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SaveForm.resx">
       <DependentUpon>SaveForm.cs</DependentUpon>
     </EmbeddedResource>

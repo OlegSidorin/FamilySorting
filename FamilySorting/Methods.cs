@@ -175,11 +175,31 @@
         public void SaveFile(Document doc)
         {
             doc.Save();
+            /*
+            string pathToFamily = "";
+            FamilyManager familyManager = doc.FamilyManager;
+            FamilyType familyType = familyManager.CurrentType;
+            try
+            {
+                using (Transaction t = new Transaction(doc, "get path"))
+                {
+                    t.Start();
+                    var p = familyManager.get_Parameter("КПСП_Путь к семейству");
+                    pathToFamily = familyType.AsString(p);
+                    t.Commit();
+                }
+            }
+            catch (Exception e)
+            {
+                TaskDialog.Show("!Warning!", e.ToString());
+            }
+            */
             var docPath = doc.PathName.ToString();
-            var dir = Path.GetFullPath(docPath).ToString();
-            string[] st = Directory.GetFiles(dir, "00?.rfa");
 
-            TaskDialog.Show("Warn", "Privet");
+            var dir = Path.GetFullPath(docPath).ToString().Replace(doc.Title + ".rfa", "");
+            string[] st = Directory.GetFiles(dir, "*.00??.rfa");
+
+            //TaskDialog.Show("Warn", dir);
             foreach (var s in st) 
             {
                 if (File.Exists(s))
@@ -190,8 +210,8 @@
                     }
                     catch (System.IO.IOException e)
                     {
+                        TaskDialog.Show("Warn", e.ToString());
                         
-                        return;
                     }
                 }
             }
