@@ -509,7 +509,15 @@
             }
 
             //TaskDialog.Show("Final", log);
-            commandData.Application.Application.SharedParametersFilename = Main.FOP_KSP_Path;
+            if (System.IO.File.Exists(Main.FOP_KSP_Path))
+            {
+                commandData.Application.Application.SharedParametersFilename = Main.FOP_KSP_Path;
+            }
+            else
+            {
+                commandData.Application.Application.SharedParametersFilename = Main.FOP_KSP_Local_Path;
+            }
+                
             return Result.Succeeded;
         }
     }
