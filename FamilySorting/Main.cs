@@ -40,20 +40,9 @@
                 application.CreateRibbonTab(TabName);
             }
             RibbonPanel panelSort = application.CreateRibbonPanel(TabName, PanelSortName);
-            string path = Assembly.GetExecutingAssembly().Location;
-            string folderTemp = "";
-            string familyFolderPath = path.Replace(@"\FamilySorting.dll", "") + @"\res\folder.txt";
 
-            //Open the file to read from.
-            using (StreamReader sr = File.OpenText(familyFolderPath))
-            {
-                string s;
-                while ((s = sr.ReadLine()) != null)
-                {
-                    folderTemp += s;
-                }
-            }
-            Folder = folderTemp;
+            string path = Assembly.GetExecutingAssembly().Location;
+            Folder = GetLibFolder();
 
             var ClassBtnData = new PushButtonData("ClassBtnData", "Назначить\nклассификатор", path, "FamilySorting.ClassCommand")
             {
@@ -111,7 +100,23 @@
 
             return Result.Succeeded;
         }
+        public static string GetLibFolder()
+        {
+            string path = Assembly.GetExecutingAssembly().Location;
+            string folder = "";
+            string familyFolderPath = path.Replace(@"\FamilySorting.dll", "") + @"\res\folder.txt";
 
+            //Open the file to read from.
+            using (StreamReader sr = File.OpenText(familyFolderPath))
+            {
+                string s;
+                while ((s = sr.ReadLine()) != null)
+                {
+                    folder += s;
+                }
+            }
+            return folder;
+        }
 
         public Result OnShutdown(UIControlledApplication application)
         {

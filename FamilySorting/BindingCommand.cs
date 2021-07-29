@@ -45,7 +45,7 @@
                 "0b3fd4ed-0256-43e5-a997-5311f4c19091", "A80FE9BB-B06E-46BD-B50D-D32486ED228F", "8F0F22FE-8DA1-4CF3-B94D-3DC33041E5D3",
                 "fb30c7d4-3e3c-4fe6-821b-189cf35b7f9f", "647b5bc9-6570-416c-93d3-bd0d159775f2", "a8cdbf7b-d60a-485e-a520-447d2055f351",
                 "8b5e61a2-b091-491c-8092-0b01a55d4f45", "9b3dbd60-5be3-4842-9dbe-cd644ef5f9e8", "946c4e27-a56c-422d-999c-778a150b950e",
-                "a8832df7-0302-4a63-a6e1-47a01632b987", "8f2e4f93-9472-4941-a65d-0ac468fd6a6d", "da753fe3-ecfa-465b-9a2c-02f55d0c2ff1",
+                "a8832df7-0302-4a63-a6e1-47a01632b987", 
                 "ef3ac60d-2cf8-4bd8-bd66-dbcb42e92f4a",
                 "f13b35e5-9fb9-4cf8-b330-efe01d3780c4", "e7edd112-da46-46c3-886c-934dad841efb",
                 "bfa2f0d2-ccd0-4a02-95c7-573f0a9829c3", "2fd9e8cb-84f3-4297-b8b8-75f444e124ed",  "ae8ff999-1f22-4ed7-ad33-61503d85f0f4"
@@ -55,7 +55,7 @@
                 "КПСП_GUID семейства", "КПСП_Дисциплина", "КПСП_Категория", "КПСП_Подкатегория", "МСК_Версия Revit", "МСК_Версия семейства", "КПСП_Статус",
                 "КПСП_Библиотека семейств", "КПСП_Инструкция", "КПСП_Путь к семейству", "КПСП_Дата редактирования", "КПСП_Автор", "КПСП_Вложенные семейства",
                 "МСК_Марка", "МСК_Наименование", "МСК_Завод-изготовитель", "МСК_Материал", "МСК_Описание", "МСК_Масса", "МСК_Масса_Текст",
-                "МСК_Размер_Ширина", "МСК_Размер_Высота", "МСК_ЕдИзм", "МСК_Примечание", "МСК_Обозначение",
+                "МСК_ЕдИзм", "МСК_Примечание", "МСК_Обозначение",
                 "МСК_Наименование краткое", "МСК_Код изделия",  "МСК_Позиция"
             };
             string[] parametersArray =
@@ -66,7 +66,7 @@
             string[] paramtersMSKTypeArray =
             {
                 "МСК_Марка", "МСК_Наименование", "МСК_Завод-изготовитель", "МСК_Материал", "МСК_Описание", "МСК_Масса", "МСК_Масса_Текст",
-                "МСК_Размер_Ширина", "МСК_Размер_Высота", "МСК_ЕдИзм", "МСК_Примечание", "МСК_Обозначение"
+                "МСК_ЕдИзм", "МСК_Примечание", "МСК_Обозначение"
             };
             string[] paramtersMSKTypeAnnotationArray =
             {
@@ -283,7 +283,9 @@
                     }
                     trans.Commit();
                 }
-                
+
+                string libFolderPath = Main.GetLibFolder();
+
                 foreach (FamilyType type in types)
                 {
                     try
@@ -334,7 +336,8 @@
                             familyManager.Set(p, User);
 
                             p = familyManager.get_Parameter("КПСП_Библиотека семейств");
-                            familyManager.Set(p, @"K:\Стандарт\ТИМ Семейства\0_Реестр семейств\Реестр.xlsm");
+                            
+                            familyManager.Set(p, libFolderPath + @"\0_Реестр семейств\Реестр.xlsm");
 
                             #region set parameters with Classificator Cod
                             if (!isAnnotation)
@@ -389,63 +392,63 @@
                                             p = familyManager.get_Parameter("КПСП_Подкатегория");
                                             familyManager.Set(p, "Марки");
                                             p = familyManager.get_Parameter("КПСП_Путь к семейству");
-                                            familyManager.Set(p, @"K:\Стандарт\ТИМ Семейства\0_Библиотека семейств RXX\1 Общие\Аннотации\Марки".Replace("RXX", build));
+                                            familyManager.Set(p, libFolderPath + @"\0_Библиотека семейств RXX\1 Общие\Аннотации\Марки".Replace("RXX", build));
                                         }
                                         else if (annotationFamily.FamilyCategory.Name.Contains("Просмотр заголовков"))
                                         {
                                             p = familyManager.get_Parameter("КПСП_Подкатегория");
                                             familyManager.Set(p, "Название вида");
                                             p = familyManager.get_Parameter("КПСП_Путь к семейству");
-                                            familyManager.Set(p, @"K:\Стандарт\ТИМ Семейства\0_Библиотека семейств RXX\1 Общие\Аннотации\Название вида".Replace("RXX", build));
+                                            familyManager.Set(p, libFolderPath + @"\0_Библиотека семейств RXX\1 Общие\Аннотации\Название вида".Replace("RXX", build));
                                         }
                                         else if (annotationFamily.FamilyCategory.Name.Contains("Обозначения высотных отметок"))
                                         {
                                             p = familyManager.get_Parameter("КПСП_Подкатегория");
                                             familyManager.Set(p, "Обозначение высотной отметки");
                                             p = familyManager.get_Parameter("КПСП_Путь к семейству");
-                                            familyManager.Set(p, @"K:\Стандарт\ТИМ Семейства\0_Библиотека семейств RXX\1 Общие\Аннотации\Обозначение высотной отметки".Replace("RXX", build));
+                                            familyManager.Set(p, libFolderPath + @"\0_Библиотека семейств RXX\1 Общие\Аннотации\Обозначение высотной отметки".Replace("RXX", build));
                                         }
                                         else if (annotationFamily.FamilyCategory.Name.Contains("Обозначения осей"))
                                         {
                                             p = familyManager.get_Parameter("КПСП_Подкатегория");
                                             familyManager.Set(p, "Обозначение оси");
                                             p = familyManager.get_Parameter("КПСП_Путь к семейству");
-                                            familyManager.Set(p, @"K:\Стандарт\ТИМ Семейства\0_Библиотека семейств RXX\1 Общие\Аннотации\Обозначение оси".Replace("RXX", build));
+                                            familyManager.Set(p, libFolderPath + @"\0_Библиотека семейств RXX\1 Общие\Аннотации\Обозначение оси".Replace("RXX", build));
                                         }
                                         else if (annotationFamily.FamilyCategory.Name.Contains("Головные части уровней"))
                                         {
                                             p = familyManager.get_Parameter("КПСП_Подкатегория");
                                             familyManager.Set(p, "Обозначение уровня");
                                             p = familyManager.get_Parameter("КПСП_Путь к семейству");
-                                            familyManager.Set(p, @"K:\Стандарт\ТИМ Семейства\0_Библиотека семейств RXX\1 Общие\Аннотации\Обозначение уровня".Replace("RXX", build));
+                                            familyManager.Set(p, libFolderPath + @"\0_Библиотека семейств RXX\1 Общие\Аннотации\Обозначение уровня".Replace("RXX", build));
                                         }
                                         else if (annotationFamily.FamilyCategory.Name.Contains("Заголовки фрагментов"))
                                         {
                                             p = familyManager.get_Parameter("КПСП_Подкатегория");
                                             familyManager.Set(p, "Обозначение фрагмента");
                                             p = familyManager.get_Parameter("КПСП_Путь к семейству");
-                                            familyManager.Set(p, @"K:\Стандарт\ТИМ Семейства\0_Библиотека семейств RXX\1 Общие\Аннотации\Обозначение фрагмента".Replace("RXX", build));
+                                            familyManager.Set(p, libFolderPath + @"\0_Библиотека семейств RXX\1 Общие\Аннотации\Обозначение фрагмента".Replace("RXX", build));
                                         }
                                         else if (annotationFamily.FamilyCategory.Name.Contains("Основные надписи"))
                                         {
                                             p = familyManager.get_Parameter("КПСП_Подкатегория");
                                             familyManager.Set(p, "Основные надписи");
                                             p = familyManager.get_Parameter("КПСП_Путь к семейству");
-                                            familyManager.Set(p, @"K:\Стандарт\ТИМ Семейства\0_Библиотека семейств RXX\1 Общие\Аннотации\Основные надписи".Replace("RXX", build));
+                                            familyManager.Set(p, libFolderPath + @"\0_Библиотека семейств RXX\1 Общие\Аннотации\Основные надписи".Replace("RXX", build));
                                         }
                                         else if (annotationFamily.FamilyCategory.Name.Contains("Ссылка на вид"))
                                         {
                                             p = familyManager.get_Parameter("КПСП_Подкатегория");
                                             familyManager.Set(p, "Ссылки на вид");
                                             p = familyManager.get_Parameter("КПСП_Путь к семейству");
-                                            familyManager.Set(p, @"K:\Стандарт\ТИМ Семейства\0_Библиотека семейств RXX\1 Общие\Аннотации\Ссылки на вид".Replace("RXX", build));
+                                            familyManager.Set(p, libFolderPath + @"\0_Библиотека семейств RXX\1 Общие\Аннотации\Ссылки на вид".Replace("RXX", build));
                                         }
                                         else
                                         {
                                             p = familyManager.get_Parameter("КПСП_Подкатегория");
                                             familyManager.Set(p, "Типовые аннотации");
                                             p = familyManager.get_Parameter("КПСП_Путь к семейству");
-                                            familyManager.Set(p, @"K:\Стандарт\ТИМ Семейства\0_Библиотека семейств RXX\1 Общие\Аннотации\Типовые аннотации".Replace("RXX", build));
+                                            familyManager.Set(p, libFolderPath + @"\0_Библиотека семейств RXX\1 Общие\Аннотации\Типовые аннотации".Replace("RXX", build));
                                         }
                                     }
                                     else

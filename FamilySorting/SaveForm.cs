@@ -183,18 +183,12 @@ namespace FamilySorting
                     guidsDistinct = guids.Distinct().ToList();
                 }
 
-                var filePath = "";
-                if (File.Exists(Main.ReestrPath))
+                var fileDir = Main.GetLibFolder() + @"\0_Реестр семейств\Админ";
+                var filePath = fileDir + @"\Реестр_семейств.xlsx";
+                if (!File.Exists(filePath))
                 {
-                    filePath = Main.ReestrPath;
-                }
-                else
-                {
-                    string newdir= Main.Folder + @"\0_Реестр семейств\Админ";
-                    string newfile = newdir + @"\Реестр_семейств.xlsx";
-                    Directory.CreateDirectory(newdir);
-                    File.Copy(Main.ReestrLocalPath, newfile, true);
-                    filePath = newfile;
+                    Directory.CreateDirectory(fileDir);
+                    File.Copy(Main.ReestrLocalPath, filePath, true);
                 }
                 
                 var f = new FamilyParameters();
