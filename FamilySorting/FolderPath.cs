@@ -35,5 +35,23 @@ namespace FamilySorting
             Main.Folder = textBox.Text;
             Close();
         }
+
+        private void textBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        //private void TextBox_KeyDown(object sender, KeyEventArgs e)
+        //{
+        //    //if (e.KeyData == (Keys.Control | Keys.A))
+        //    //{
+        //    //    textBox.SelectAll();
+        //    //    e.Handled = e.SuppressKeyPress = true;
+        //    //}
+        //    if (e.KeyData == (Keys.Control | Keys.V))
+        //    {
+        //        textBox.Paste();
+        //        e.Handled = e.SuppressKeyPress = true;
+        //    }
+        //}
     }
 }

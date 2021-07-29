@@ -54,6 +54,7 @@ namespace FamilySorting
             this.textBox.Name = "textBox";
             this.textBox.Size = new System.Drawing.Size(561, 22);
             this.textBox.TabIndex = 1;
+            this.textBox.TextChanged += new System.EventHandler(this.textBox_TextChanged);
             // 
             // label1
             // 
