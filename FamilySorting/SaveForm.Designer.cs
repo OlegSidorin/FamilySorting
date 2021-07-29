@@ -85,6 +85,7 @@ namespace FamilySorting
             this.textFamilyName.Name = "textFamilyName";
             this.textFamilyName.Size = new System.Drawing.Size(644, 22);
             this.textFamilyName.TabIndex = 4;
+            this.textFamilyName.TextChanged += new System.EventHandler(this.textFamilyName_TextChanged);
             // 
             // labelPath
             // 

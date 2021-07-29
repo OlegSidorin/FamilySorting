@@ -18,6 +18,7 @@
         public static string FolderReestrPath { get; set; } = Folder + "0_Реестр семейств\\Админ";
         public static string ReestrPath { get; set; } = Folder + "0_Реестр семейств\\Админ\\Реестр_семейств.xlsx";
         public static string ReestrLocalPath { get; set; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\res\\Реестр_семейств.xlsx";
+        public static string ReestrMLocalPath { get; set; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\res\\Реестр.xlsm";
         public static string FOPPath { get; set; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\res\\ФОП.txt";
         public static string FOP_KSP_Path { get; set; } = "K:\\Стандарт\\ТИМ Шаблоны\\КПСП_ФОП.txt";
         public static string FOP_KSP_Local_Path { get; set; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\res\\КПСП_ФОП.txt";

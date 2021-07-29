@@ -183,14 +183,18 @@ namespace FamilySorting
                     guidsDistinct = guids.Distinct().ToList();
                 }
 
-                var fileDir = Main.GetLibFolder() + @"\0_Реестр семейств\Админ";
+                var fileDirM = Main.GetLibFolder() + @"\0_Реестр семейств";
+                var fileDir = fileDirM + @"\Админ";
                 var filePath = fileDir + @"\Реестр_семейств.xlsx";
+                var filePathM = fileDirM + @"\Реестр.xlsm";
+
                 if (!File.Exists(filePath))
                 {
                     Directory.CreateDirectory(fileDir);
                     File.Copy(Main.ReestrLocalPath, filePath, true);
+                    File.Copy(Main.ReestrMLocalPath, filePathM, true);
                 }
-                
+
                 var f = new FamilyParameters();
                 f.GetParameters(doc);
 
@@ -334,6 +338,24 @@ namespace FamilySorting
             public string GetName()
             {
                 return "External Event On Save Button";
+            }
+        }
+
+        private void textFamilyName_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+        private void textFamilyName_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == (Keys.Control | Keys.A))
+            {
+                textFamilyName.SelectAll();
+                e.Handled = e.SuppressKeyPress = true;
+            }
+            if (e.KeyData == (Keys.Control | Keys.V))
+            {
+                textFamilyName.Paste();
+                e.Handled = e.SuppressKeyPress = true;
             }
         }
     }

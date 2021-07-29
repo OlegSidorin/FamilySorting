@@ -197,8 +197,8 @@
             var docPath = doc.PathName.ToString();
 
             var dir = Path.GetFullPath(docPath).ToString().Replace(doc.Title + ".rfa", "");
-            string[] st = Directory.GetFiles(dir, "*.00??.rfa");
 
+            string[] st = Directory.GetFiles(dir, "*.00??.rfa");
             //TaskDialog.Show("Warn", dir);
             foreach (var s in st) 
             {
@@ -216,7 +216,23 @@
                 }
             }
 
-            
+            st = Directory.GetFiles(dir, "*.AS$");
+            //TaskDialog.Show("Warn", dir);
+            foreach (var s in st)
+            {
+                if (File.Exists(s))
+                {
+                    try
+                    {
+                        File.Delete(s);
+                    }
+                    catch (System.IO.IOException e)
+                    {
+                        TaskDialog.Show("Warn", e.ToString());
+
+                    }
+                }
+            }
         }
         public string GetParameter(Document doc, string str)
         {
@@ -259,7 +275,6 @@
             }
             return result;
         }
-
 
         #region Supporting Methods
         #endregion
